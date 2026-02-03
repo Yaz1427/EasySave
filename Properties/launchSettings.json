@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EasySave": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
