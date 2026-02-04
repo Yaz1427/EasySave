@@ -1,6 +1,7 @@
 ﻿using System;
 using EasySave.ViewModel;
 using EasySave.View;
+using EasySave.App.Models;
 
 namespace EasySave.App
 {

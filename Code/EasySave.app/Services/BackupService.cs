@@ -1,29 +1,28 @@
-ï»¿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
-using EasySave.app.Model;
-using Models;
-using EasyLog;
-
+using EasySave.Models;
+using EasyLog.Services;
+using EasyLog.Models;
 
 namespace EasySave.Services
 {
 	public class BackupService
 	{
-		// DÃ©pendances (seront injectÃ©es plus tard)
+		// Dépendances (seront injectées plus tard)
 		// private readonly DLL _logger;
 
-		private readonly Logger _logger;
+		private readonly LoggerService _logger;
 
 		// Constructeur
 		public BackupService()
 		{
-			_logger = _logger ?? throw new ArgumentNullException(nameof(logger));
+			_logger = new LoggerService();
 		}
 
 
 
-		// MÃ©thode principale : exÃ©cutera une sauvegarde
+		// Méthode principale : exécutera une sauvegarde
 		public void ExecuteBackup(BackupJob job)
 		{
 			// TODO :
@@ -31,13 +30,13 @@ namespace EasySave.Services
 			// - Appliquer la logique Full / Differential
 			// - Copier les fichiers
 			// - Appeler le logger (via la DLL)
-			// - Mettre Ã  jour RealTimeState
+			// - Mettre à jour RealTimeState
 
 			if (job == null) throw new ArgumentNullException(nameof(job));
 			if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir vide");
 			if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir null");
 
-			// VÃ©rifications rÃ©pertoires
+			// Vérifications répertoires
 			if (!Directory.Exists(job.SourceDir))
 				throw new DirectoryNotFoundException($"Source introuvable : {job.SourceDir}");
 
@@ -57,7 +56,7 @@ namespace EasySave.Services
 			}
 			else
 			{
-				throw new NotSupportedException($"Type de job non supportÃ© : {job.Type}");
+				throw new NotSupportedException($"Type de job non supporté : {job.Type}");
 			}
 
 			sw.Stop();
@@ -77,12 +76,12 @@ namespace EasySave.Services
 
 
 
-		// RÃ¨gle de sauvegarde diffÃ©rentielle
+		// Règle de sauvegarde différentielle
 		public bool CheckDifferential(string file)
 		{
 			// TODO :
 			// - Comparer le fichier source et cible
-			// - Retourner true si le fichier doit Ãªtre copiÃ©
+			// - Retourner true si le fichier doit être copié
 
 			if (string.IsNullOrWhiteSpace(file)) return false;
 
@@ -92,7 +91,7 @@ namespace EasySave.Services
 			return true;
 		}
 
-		// Helpers privÃ©s
+		// Helpers privés
 
 		private void CopyDirectoryFull(BackupJob job)
 		{
@@ -141,7 +140,7 @@ namespace EasySave.Services
 				JobName = job.Name,
 				SourcePath = sourceFile,
 				TargetPath = targetFile,
-				fileSize = fileSize, 
+				FileSize = fileSize, 
 				TransferTime = (int)sw.ElapsedMilliseconds
 			};
 			_logger.SaveLog(entry);

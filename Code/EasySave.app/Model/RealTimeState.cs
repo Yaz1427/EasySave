@@ -1,6 +1,8 @@
+//RealTimeState.cs
+
 using System;
 
-namespace EasySave.App.Models
+namespace EasySave.Models
 {
 	/// <summary>
 	/// Structure pour le fichier "état temps réel" (state.json).

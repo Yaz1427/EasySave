@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using EasySave.App.Models;
-using EasySave.App.Services;
+using System.Linq;
+using EasySave.Services;
+using EasySave.Models;
 
 namespace EasySave.ViewModel
 {
@@ -10,7 +11,7 @@ namespace EasySave.ViewModel
     /// </summary>
     public class MainViewModel
     {
-        // Attributs privÈs conformes au diagramme UML
+        // Attributs priv√©s conformes au diagramme UML
         private List<BackupJob> _jobs;
         private BackupService _backupService;
         private ConfigService _configService;
@@ -20,25 +21,25 @@ namespace EasySave.ViewModel
         /// </summary>
         public MainViewModel()
         {
-            // On instancie les services (dÈveloppÈs par tes collËgues)
+            // On instancie les services (d√©velopp√©s par tes coll√®gues)
             _configService = new ConfigService();
             _backupService = new BackupService();
 
-            // On charge la liste des 5 travaux au dÈmarrage
+            // On charge la liste des 5 travaux au d√©marrage
             _jobs = _configService.LoadJobs();
         }
 
         /// <summary>
-        /// ExÈcute un travail de sauvegarde spÈcifique par son index (0 ‡ 4).
+        /// Ex√©cute un travail de sauvegarde sp√©cifique par son index (0 √† 4).
         /// </summary>
         public void ExecuteJob(int index)
         {
-            // VÈrification de sÈcuritÈ sur l'index (5 jobs max pour la V1)
+            // V√©rification de s√©curit√© sur l'index (5 jobs max pour la V1)
             if (index >= 0 && index < _jobs.Count)
             {
                 BackupJob jobToRun = _jobs[index];
 
-                // Appel du service de Deshani pour faire la copie rÈelle
+                // Appel du service de Deshani pour faire la copie r√©elle
                 _backupService.ExecuteBackup(jobToRun);
             }
             else
@@ -47,8 +48,8 @@ namespace EasySave.ViewModel
             }
         }
 
-        /// <summary
-        /// ExÈcute sÈquentiellement tous les travaux de sauvegarde configurÈs.
+        /// <summary>
+        /// Ex√©cute s√©quentiellement tous les travaux de sauvegarde configur√©s.
         /// </summary>
         public void ExecuteAllJobs()
         {
@@ -58,9 +59,60 @@ namespace EasySave.ViewModel
             }
         }
 
-        // PropriÈtÈ pour que la vue puisse Èventuellement lister les noms des jobs
+        /// <summary>
+        /// Cr√©e un nouveau travail de sauvegarde et l'ajoute √† la liste
+        /// </summary>
+        public bool CreateJob(string name, string sourceDir, string targetDir, JobType type)
+        {
+            // V√©rifications de base
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(sourceDir) || string.IsNullOrWhiteSpace(targetDir))
+                return false;
+
+            // V√©rifier qu'on ne d√©passe pas 5 jobs
+            if (_jobs.Count >= 5)
+                return false;
+
+            // Cr√©er le nouveau job
+            var newJob = new BackupJob
+            {
+                Name = name,
+                SourceDir = sourceDir,
+                TargetDir = targetDir,
+                Type = type
+            };
+
+            // Ajouter √† la liste
+            _jobs.Add(newJob);
+
+            // Sauvegarder dans le fichier
+            _configService.SaveJobs(_jobs);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Supprime un travail de sauvegarde par son index
+        /// </summary>
+        public bool DeleteJob(int index)
+        {
+            if (index >= 0 && index < _jobs.Count)
+            {
+                _jobs.RemoveAt(index);
+                _configService.SaveJobs(_jobs);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Retourne la liste de tous les travaux de sauvegarde
+        /// </summary>
+        public List<BackupJob> GetAllJobs()
+        {
+            return _jobs.ToList();
+        }
+
+        // Propri√©t√© pour que la vue puisse √©ventuellement lister les noms des jobs
         public List<BackupJob> Jobs => _jobs;
     }
 }
-
-

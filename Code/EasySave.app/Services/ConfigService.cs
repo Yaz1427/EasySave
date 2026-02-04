@@ -1,11 +1,13 @@
+//ConfigService.cs
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using EasySave.App.Models;
+using EasySave.Models;
 
-namespace EasySave.App.Services
+namespace EasySave.Services
 {
     public class ConfigService
     {
@@ -109,5 +111,7 @@ namespace EasySave.App.Services
             //évite les sauvegardes vers le même répertoire
             return true;
         }
+    }
+}
 
         

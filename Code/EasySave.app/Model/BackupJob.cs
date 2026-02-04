@@ -1,4 +1,4 @@
-namespace EasySave.App.Models
+namespace EasySave.Models
 {
     /// <summary>
     /// Type de sauvegarde autorisé par ProSoft.
