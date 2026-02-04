@@ -9,7 +9,6 @@ namespace EasySave.App
         static void Main(string[] args)
         {
             // 1. Initialisation du ViewModel (Le cerveau)
-            // C'est ici que les services de Deshani et Aïcha sont chargés
             MainViewModel viewModel = new MainViewModel();
 
             // 2. Initialisation de la Vue (L'interface de Nawfel)
