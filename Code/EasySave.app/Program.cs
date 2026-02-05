@@ -5,6 +5,7 @@ using EasySave.ViewModel;
 using EasySave.View;
 using EasySave.Models;
 using EasySave.Services;
+using EasyLog.Services;
 
 namespace EasySave.App
 {
@@ -12,20 +13,23 @@ namespace EasySave.App
     {
         static void Main(string[] args)
         {
+            // Test des services (optionnel - commenter pour la production)
+            // TestServices.RunTests();
+            
             // 1. Initialisation du ViewModel (Le cerveau)
             MainViewModel viewModel = new MainViewModel();
 
-            // 2. Initialisation de la Vue (L'interface de Nawfel)
-            // On lui donne le viewModel pour qu'elle puisse lui envoyer des ordres
-            ConsoleView view = new ConsoleView(viewModel);
-
-            // 3. Gestion des arguments de ligne de commande (Exigence ProSoft)
+            // 2. Gestion des arguments de ligne de commande (Exigence ProSoft)
             // Exemple : EasySave.exe 1-3 ou 1;3
             if (args.Length > 0)
             {
                 ExecuteCommandLineArgs(args[0], viewModel);
-                return; // On quitte après l'exécution en ligne de commande
+                return; // On quitte aprÃ¨s l'exÃ©cution en ligne de commande
             }
+
+            // 3. Initialisation de la Vue (L'interface de Nawfel)
+            // On lui donne le viewModel pour qu'elle puisse lui envoyer des ordres
+            ConsoleView view = new ConsoleView(viewModel);
 
             // 4. Boucle principale de l'application (Mode interactif)
             bool running = true;
@@ -52,7 +56,7 @@ namespace EasySave.App
         }
 
         /// <summary>
-        /// Analyse et exécute les commandes passées directement au .exe
+        /// Analyse et exÃ©cute les commandes passÃ©es directement au .exe
         /// </summary>
         private static void ExecuteCommandLineArgs(string arg, MainViewModel vm)
         {

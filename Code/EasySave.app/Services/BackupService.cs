@@ -4,154 +4,225 @@ using System.Reflection.Metadata.Ecma335;
 using EasySave.Models;
 using EasyLog.Services;
 using EasyLog.Models;
+using System.IO;
+using System.Linq;
 
 namespace EasySave.Services
 {
-	public class BackupService
-	{
-		// Dépendances (seront injectées plus tard)
-		// private readonly DLL _logger;
+    public class BackupService
+    {
+        // DÃ©pendances
+        private readonly LoggerService _logger;
+        private readonly RealTimeStateService _realTimeStateService;
 
-		private readonly LoggerService _logger;
+        // Constructeur
+        public BackupService()
+        {
+            string logsDir = Path.Combine(@"C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module GÃ©nie Logiciel\EasySave", "LogsEasySave", "Logs");
+            _logger = new LoggerService(logsDir);
+            _realTimeStateService = new RealTimeStateService();
+        }
 
-		// Constructeur
-		public BackupService()
-		{
-			_logger = new LoggerService();
-		}
+        // MÃ©thode principale : exÃ©cutera une sauvegarde
+        public void ExecuteBackup(BackupJob job)
+        {
+            if (job == null) throw new ArgumentNullException(nameof(job));
+            if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir vide");
+            if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir null");
 
+            // VÃ©rifications rÃ©pertoires
+            if (!Directory.Exists(job.SourceDir))
+                throw new DirectoryNotFoundException($"Source introuvable : {job.SourceDir}");
 
+            Directory.CreateDirectory(job.TargetDir);
 
-		// Méthode principale : exécutera une sauvegarde
-		public void ExecuteBackup(BackupJob job)
-		{
-			// TODO :
-			// - Parcourir les fichiers du dossier source
-			// - Appliquer la logique Full / Differential
-			// - Copier les fichiers
-			// - Appeler le logger (via la DLL)
-			// - Mettre à jour RealTimeState
+            // Initialiser l'Ã©tat temps rÃ©el
+            var state = _realTimeStateService.CreateInitialState(job);
+            _realTimeStateService.UpdateState(state);
 
-			if (job == null) throw new ArgumentNullException(nameof(job));
-			if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir vide");
-			if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir null");
+            // Calculer les informations initiales
+            var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+            state.TotalFilesToCopy = allFiles.Count;
+            state.TotalFilesSize = allFiles.Sum(f => new FileInfo(f).Length);
+            state.RemainingFiles = allFiles.Count;
+            state.RemainingSize = state.TotalFilesSize;
+            _realTimeStateService.UpdateState(state);
 
-			// Vérifications répertoires
-			if (!Directory.Exists(job.SourceDir))
-				throw new DirectoryNotFoundException($"Source introuvable : {job.SourceDir}");
+            // Mesure temps
+            var sw = Stopwatch.StartNew();
 
-			Directory.CreateDirectory(job.TargetDir);
+            try
+            {
+                // Copie selon type
+                if (job.Type == JobType.Full)
+                {
+                    CopyDirectoryFull(job, state);
+                }
+                else if (job.Type == JobType.Differential)
+                {
+                    CopyDirectoryDifferential(job, state);
+                }
+                else
+                {
+                    throw new NotSupportedException($"Type de job non supportÃ© : {job.Type}");
+                }
 
-			// Mesure temps
-			var sw = Stopwatch.StartNew();
+                // Marquer comme terminÃ©
+                state.Status = "End";
+                state.Progress = 100;
+                state.RemainingFiles = 0;
+                state.RemainingSize = 0;
+                state.CurrentSourceFile = "";
+                state.CurrentTargetFile = "";
+                state.LastActionTimestamp = DateTime.Now;
+                _realTimeStateService.UpdateState(state);
+            }
+            finally
+            {
+                sw.Stop();
 
-			// Copie selon type
-			if (job.Type == JobType.Full)
-			{
-				CopyDirectoryFull(job);
-			}
-			else if (job.Type == JobType.Differential)
-			{
-				CopyDirectoryDifferential(job);
-			}
-			else
-			{
-				throw new NotSupportedException($"Type de job non supporté : {job.Type}");
-			}
+                var entry = new LogEntry
+                {
+                    Timestamp = DateTime.Now,
+                    JobName = job.Name,
+                    SourcePath = job.SourceDir,
+                    TargetPath = job.TargetDir,
+                    FileSize = GetDirectorySize(job.TargetDir),
+                    TransferTime = (int)sw.ElapsedMilliseconds
+                };
 
-			sw.Stop();
+                _logger.SaveLog(entry);
+            }
+        }
 
-			var entry = new LogEntry
-			{
-				Timestamp = DateTime.Now,
-				JobName = job.Name,
-				SourcePath = job.SourceDir,
-				TargetPath = job.TargetDir,
-				FileSize = GetDirectorySize(job.TargetDir),
-				TransferTime = (int)sw.ElapsedMilliseconds
-			};
+        // RÃ¨gle de sauvegarde diffÃ©rentielle
+        public bool CheckDifferential(string file)
+        {
+            if (string.IsNullOrWhiteSpace(file)) return false;
+            if (!File.Exists(file)) return false;
+            return true;
+        }
 
-			_logger.SaveLog(entry);
-		}
+        // Helpers privÃ©s
 
+        private void CopyDirectoryFull(BackupJob job, RealTimeState state)
+        {
+            var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+            int processedFiles = 0;
 
+            foreach (var sourceFile in allFiles)
+            {
+                var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+                var targetFile = Path.Combine(job.TargetDir, relativePath);
 
-		// Règle de sauvegarde différentielle
-		public bool CheckDifferential(string file)
-		{
-			// TODO :
-			// - Comparer le fichier source et cible
-			// - Retourner true si le fichier doit être copié
+                // Mettre Ã  jour l'Ã©tat temps rÃ©el
+                state.CurrentSourceFile = sourceFile;
+                state.CurrentTargetFile = targetFile;
+                state.LastActionTimestamp = DateTime.Now;
+                _realTimeStateService.UpdateState(state);
 
-			if (string.IsNullOrWhiteSpace(file)) return false;
+                Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
+                CopyFileWithTiming(job, sourceFile, targetFile, state);
 
-			if (!File.Exists(file)) return false;
+                processedFiles++;
+                state.Progress = (double)processedFiles / allFiles.Count * 100;
+                state.RemainingFiles = allFiles.Count - processedFiles;
+                state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                _realTimeStateService.UpdateState(state);
+            }
+        }
 
-		
-			return true;
-		}
+        private void CopyDirectoryDifferential(BackupJob job, RealTimeState state)
+        {
+            var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+            var filesToCopy = new List<string>();
 
-		// Helpers privés
+            // DÃ©terminer les fichiers Ã  copier
+            foreach (var sourceFile in allFiles)
+            {
+                var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+                var targetFile = Path.Combine(job.TargetDir, relativePath);
 
-		private void CopyDirectoryFull(BackupJob job)
-		{
-			foreach (var sourceFile in Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories))
-			{
-				var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-				var targetFile = Path.Combine(job.TargetDir, relativePath);
+                bool shouldCopy =
+                    !File.Exists(targetFile) ||
+                    File.GetLastWriteTimeUtc(sourceFile) > File.GetLastWriteTimeUtc(targetFile) ||
+                    new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length;
 
-				Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-				CopyFileWithTiming(job, sourceFile, targetFile);
-			}
-		}
+                if (shouldCopy)
+                    filesToCopy.Add(sourceFile);
+            }
 
-		private void CopyDirectoryDifferential(BackupJob job)
-		{
-			foreach (var sourceFile in Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories))
-			{
-				var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-				var targetFile = Path.Combine(job.TargetDir, relativePath);
+            int processedFiles = 0;
 
-				bool shouldCopy =
-					!File.Exists(targetFile) ||
-					File.GetLastWriteTimeUtc(sourceFile) > File.GetLastWriteTimeUtc(targetFile) ||
-					new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length;
+            foreach (var sourceFile in filesToCopy)
+            {
+                var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+                var targetFile = Path.Combine(job.TargetDir, relativePath);
 
-				if (!shouldCopy) continue;
+                // Mettre Ã  jour l'Ã©tat temps rÃ©el
+                state.CurrentSourceFile = sourceFile;
+                state.CurrentTargetFile = targetFile;
+                state.LastActionTimestamp = DateTime.Now;
+                _realTimeStateService.UpdateState(state);
 
-				Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-				CopyFileWithTiming(job, sourceFile, targetFile);
+                Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
+                CopyFileWithTiming(job, sourceFile, targetFile, state);
 
-			}
-		}
+                processedFiles++;
+                state.Progress = (double)processedFiles / filesToCopy.Count * 100;
+                state.RemainingFiles = filesToCopy.Count - processedFiles;
+                state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                _realTimeStateService.UpdateState(state);
+            }
+        }
 
-		private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile)
-		{
-			var sw = Stopwatch.StartNew();
-			long fileSize = new FileInfo(sourceFile).Length;
+        private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile, RealTimeState state)
+        {
+            var sw = Stopwatch.StartNew();
+            long fileSize = new FileInfo(sourceFile).Length;
 
-			File.Copy(sourceFile, targetFile, overwrite: true);
+            try
+            {
+                File.Copy(sourceFile, targetFile, overwrite: true);
+                sw.Stop();
 
-			sw.Stop();
+                var entry = new LogEntry
+                {
+                    Timestamp = DateTime.Now,
+                    JobName = job.Name,
+                    SourcePath = sourceFile,
+                    TargetPath = targetFile,
+                    FileSize = fileSize,
+                    TransferTime = (int)sw.ElapsedMilliseconds
+                };
 
-			var entry = new LogEntry
-			{
-				Timestamp = DateTime.Now,
-				JobName = job.Name,
-				SourcePath = sourceFile,
-				TargetPath = targetFile,
-				FileSize = fileSize, 
-				TransferTime = (int)sw.ElapsedMilliseconds
-			};
-			_logger.SaveLog(entry);
-		}
+                _logger.SaveLog(entry);
+            }
+            catch (Exception)
+            {
+                sw.Stop();
 
-		private long GetDirectorySize(string dir)
-		{
-			long size = 0;
-			foreach (var f in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
-				size += new FileInfo(f).Length;
-			return size;
-		}
-	}
+                var entry = new LogEntry
+                {
+                    Timestamp = DateTime.Now,
+                    JobName = job.Name,
+                    SourcePath = sourceFile,
+                    TargetPath = targetFile,
+                    FileSize = fileSize,
+                    TransferTime = -(int)sw.ElapsedMilliseconds
+                };
+
+                _logger.SaveLog(entry);
+                throw;
+            }
+        }
+
+        private long GetDirectorySize(string dir)
+        {
+            long size = 0;
+            foreach (var f in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+                size += new FileInfo(f).Length;
+            return size;
+        }
+    }
 }

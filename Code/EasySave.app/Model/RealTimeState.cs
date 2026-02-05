@@ -1,40 +1,42 @@
-//RealTimeState.cs
-
 using System;
 
 namespace EasySave.Models
 {
-	/// <summary>
-	/// Structure pour le fichier "Ètat temps rÈel" (state.json).
-	/// </summary>
-	public class RealTimeState
-	{
-		// Nom du travail en cours
-		public string JobName { get; set; } = string.Empty;
+    /// <summary>
+    /// Structure pour le fichier "√©tat temps r√©el" (state.json).
+    /// Conforme aux sp√©cifications client
+    /// </summary>
+    public class RealTimeState
+    {
+        // Appellation du travail de sauvegarde
+        public string JobName { get; set; } = string.Empty;
 
-		// Horodatage de la derniËre action
-		public DateTime LastActionTimestamp { get; set; }
+        // Horodatage de la derni√®re action
+        public DateTime LastActionTimestamp { get; set; }
 
-		// …tat : "Active", "Inactive", "End", etc.
-		public string Status { get; set; } = "Inactive";
+        // √âtat du travail de Sauvegarde (Actif, Non Actif, End, etc.)
+        public string Status { get; set; } = "Inactive";
 
-		// Nombre total de fichiers ‡ copier
-		public int TotalFilesToCopy { get; set; }
+        // Si le travail est actif :
+        // Le nombre total de fichiers √©ligibles
+        public int TotalFilesToCopy { get; set; }
 
-		// Taille totale en octets
-		public long TotalFilesSize { get; set; }
+        // La taille des fichiers √† transf√©rer
+        public long TotalFilesSize { get; set; }
 
-		// Progression en pourcentage
-		public double Progress { get; set; }
+        // La progression (en pourcentage)
+        public double Progress { get; set; }
 
-		// Nombre de fichiers restants ‡ transfÈrer
-		public int RemainingFiles { get; set; }
+        // Nombre de fichiers restants
+        public int RemainingFiles { get; set; }
 
-		// Taille des fichiers restants
-		public long RemainingSize { get; set; }
+        // Taille des fichiers restants
+        public long RemainingSize { get; set; }
 
-		// Source et Destination du fichier actuellement traitÈ
-		public string CurrentSourceFilePath { get; set; } = string.Empty;
-		public string CurrentTargetFilePath { get; set; } = string.Empty;
-	}
+        // Adresse compl√®te du fichier Source en cours de sauvegarde
+        public string CurrentSourceFile { get; set; } = string.Empty;
+
+        // Adresse compl√®te du fichier de destination
+        public string CurrentTargetFile { get; set; } = string.Empty;
+    }
 }

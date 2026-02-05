@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using EasySave.ViewModel;
 using EasySave.Models;
 
@@ -25,14 +26,39 @@ namespace EasySave.View
             ChooseLanguage(); // Choix de la langue au démarrage de la vue
         }
 
+        // --- Helpers d'affichage ---
+
+        private string Fr(string fr, string en) => _language == "fr" ? fr : en;
+
+        private void WriteColor(string text, ConsoleColor color)
+        {
+            var prev = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ForegroundColor = prev;
+        }
+
+        private void WriteLineColor(string text, ConsoleColor color)
+        {
+            WriteColor(text + Environment.NewLine, color);
+        }
+
+        private void PrintSeparator()
+        {
+            WriteLineColor("+-----------------------------------------+", ConsoleColor.DarkGray);
+        }
+
         /// <summary>
         /// Propose à l'utilisateur de choisir la langue d'affichage (FR/EN).
         /// </summary>
         private void ChooseLanguage()
         {
-            Console.WriteLine("Choose language / Choisir la langue :");
-            Console.WriteLine("1 - Français");
-            Console.WriteLine("2 - English");
+            PrintSeparator();
+            WriteLineColor("  Choose language / Choisir la langue", ConsoleColor.Cyan);
+            PrintSeparator();
+            Console.WriteLine("  1 - Francais");
+            Console.WriteLine("  2 - English");
+            PrintSeparator();
             Console.Write("> ");
 
             string choice = Console.ReadLine();
@@ -49,34 +75,44 @@ namespace EasySave.View
         /// </summary>
         public void ShowMenu()
         {
-            Console.WriteLine("================================");
-            Console.WriteLine("          EasySave              ");
-            Console.WriteLine("================================");
+            var jobs = _viewModel.GetAllJobs();
 
-            if (_language == "fr")
-            {
-                Console.WriteLine("Commandes disponibles :");
-                Console.WriteLine("  help                -> Afficher le menu");
-                Console.WriteLine("  run <index>          -> Exécuter un job (ex: run 0)");
-                Console.WriteLine("  runall              -> Exécuter tous les jobs");
-                Console.WriteLine("  create              -> Créer un nouveau job de sauvegarde");
-                Console.WriteLine("  list                -> Lister tous les jobs de sauvegarde");
-                Console.WriteLine("  delete <index>      -> Supprimer un job (ex: delete 0)");
-                Console.WriteLine("  exit                -> Quitter l'application");
-            }
-            else
-            {
-                Console.WriteLine("Available commands:");
-                Console.WriteLine("  help                -> Show the menu");
-                Console.WriteLine("  run <index>          -> Run a job (ex: run 0)");
-                Console.WriteLine("  runall              -> Run all jobs");
-                Console.WriteLine("  create              -> Create a new backup job");
-                Console.WriteLine("  list                -> List all backup jobs");
-                Console.WriteLine("  delete <index>      -> Delete a job (ex: delete 0)");
-                Console.WriteLine("  exit                -> Exit the application");
-            }
+            Console.WriteLine();
+            WriteLineColor("+-----------------------------------------+", ConsoleColor.Cyan);
+            WriteLineColor("|             EasySave v1.0               |", ConsoleColor.Cyan);
+            WriteLineColor("+-----------------------------------------+", ConsoleColor.Cyan);
 
-            Console.WriteLine("================================");
+            WriteColor($"  {Fr("Jobs configures", "Configured jobs")}: ", ConsoleColor.White);
+            var countColor = jobs.Count >= 5 ? ConsoleColor.Red : ConsoleColor.Green;
+            WriteLineColor($"{jobs.Count}/5", countColor);
+
+            Console.WriteLine();
+            WriteLineColor($"  {Fr("Commandes disponibles", "Available commands")}:", ConsoleColor.Yellow);
+            Console.WriteLine();
+
+            WriteColor("  help           ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Afficher ce menu", "Show this menu"));
+
+            WriteColor("  run <index>    ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Executer un job (ex: run 0)", "Run a job (ex: run 0)"));
+
+            WriteColor("  runall         ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Executer tous les jobs", "Run all jobs sequentially"));
+
+            WriteColor("  create         ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Creer un nouveau job", "Create a new backup job"));
+
+            WriteColor("  list           ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Lister les jobs de sauvegarde", "List all backup jobs"));
+
+            WriteColor("  delete <index> ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Supprimer un job (ex: delete 0)", "Delete a job (ex: delete 0)"));
+
+            WriteColor("  exit           ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Quitter l'application", "Exit the application"));
+
+            Console.WriteLine();
+            WriteLineColor("+-----------------------------------------+", ConsoleColor.Cyan);
         }
 
         /// <summary>
@@ -97,34 +133,11 @@ namespace EasySave.View
                     break;
 
                 case "run":
-                    if (parts.Length < 2)
-                    {
-                        Console.WriteLine(_language == "fr"
-                            ? "Usage : run <index> (ex: run 0)"
-                            : "Usage: run <index> (ex: run 0)");
-                        return;
-                    }
-
-                    if (int.TryParse(parts[1], out int index))
-                    {
-                        _viewModel.ExecuteJob(index);
-                        Console.WriteLine(_language == "fr"
-                            ? $"Job {index} exécuté."
-                            : $"Job {index} executed.");
-                    }
-                    else
-                    {
-                        Console.WriteLine(_language == "fr"
-                            ? "Index invalide."
-                            : "Invalid index.");
-                    }
+                    HandleRun(parts);
                     break;
 
                 case "runall":
-                    _viewModel.ExecuteAllJobs();
-                    Console.WriteLine(_language == "fr"
-                        ? "Tous les jobs ont été exécutés."
-                        : "All jobs have been executed.");
+                    HandleRunAll();
                     break;
 
                 case "create":
@@ -136,41 +149,153 @@ namespace EasySave.View
                     break;
 
                 case "delete":
-                    if (parts.Length < 2)
-                    {
-                        Console.WriteLine(_language == "fr"
-                            ? "Usage : delete <index> (ex: delete 0)"
-                            : "Usage: delete <index> (ex: delete 0)");
-                        return;
-                    }
-
-                    if (int.TryParse(parts[1], out int deleteIndex))
-                    {
-                        bool success = _viewModel.DeleteJob(deleteIndex);
-                        Console.WriteLine(_language == "fr"
-                            ? success ? $"Job {deleteIndex} supprimé avec succès." : $"Impossible de supprimer le job {deleteIndex}."
-                            : success ? $"Job {deleteIndex} deleted successfully." : $"Cannot delete job {deleteIndex}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine(_language == "fr"
-                            ? "Index invalide."
-                            : "Invalid index.");
-                    }
+                    HandleDelete(parts);
                     break;
 
                 case "exit":
-                    // L'arrêt de la boucle se fait dans Program.cs, ici on informe seulement.
-                    Console.WriteLine(_language == "fr"
-                        ? "Fermeture demandée..."
-                        : "Exit requested...");
+                    WriteLineColor(Fr("Fermeture demandee...", "Exit requested..."), ConsoleColor.Yellow);
                     break;
 
                 default:
-                    Console.WriteLine(_language == "fr"
-                        ? $"Commande inconnue : {command}. Tapez 'help' pour voir les commandes disponibles."
-                        : $"Unknown command: {command}. Type 'help' to see available commands.");
+                    WriteLineColor(Fr($"Commande inconnue : {command}. Tapez 'help' pour l'aide.",
+                        $"Unknown command: {command}. Type 'help' for help."), ConsoleColor.Red);
                     break;
+            }
+        }
+
+        private void HandleRun(string[] parts)
+        {
+            if (parts.Length < 2)
+            {
+                WriteLineColor(Fr("Usage : run <index> (ex: run 0)", "Usage: run <index> (ex: run 0)"), ConsoleColor.Yellow);
+                return;
+            }
+
+            if (!int.TryParse(parts[1], out int index))
+            {
+                WriteLineColor(Fr("Index invalide.", "Invalid index."), ConsoleColor.Red);
+                return;
+            }
+
+            var jobs = _viewModel.GetAllJobs();
+            if (index < 0 || index >= jobs.Count)
+            {
+                WriteLineColor(Fr($"Aucun job a l'index {index}. Utilisez 'list' pour voir les jobs.",
+                    $"No job at index {index}. Use 'list' to see jobs."), ConsoleColor.Red);
+                return;
+            }
+
+            var job = jobs[index];
+            PrintSeparator();
+            WriteColor(Fr("  Lancement : ", "  Starting:  "), ConsoleColor.Cyan);
+            Console.WriteLine(job.Name);
+            WriteColor(Fr("  Source:    ", "  Source:    "), ConsoleColor.DarkGray);
+            Console.WriteLine(job.SourceDir);
+            WriteColor(Fr("  Cible:     ", "  Target:    "), ConsoleColor.DarkGray);
+            Console.WriteLine(job.TargetDir);
+            WriteColor(Fr("  Type:      ", "  Type:      "), ConsoleColor.DarkGray);
+            WriteLineColor(job.Type.ToString(), job.Type == JobType.Full ? ConsoleColor.Magenta : ConsoleColor.Blue);
+            PrintSeparator();
+
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                _viewModel.ExecuteJob(index);
+                sw.Stop();
+                WriteLineColor(Fr($"  Job '{job.Name}' termine avec succes en {sw.ElapsedMilliseconds} ms.",
+                    $"  Job '{job.Name}' completed successfully in {sw.ElapsedMilliseconds} ms."), ConsoleColor.Green);
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                WriteLineColor(Fr($"  Erreur sur le job '{job.Name}': {ex.Message}",
+                    $"  Error on job '{job.Name}': {ex.Message}"), ConsoleColor.Red);
+            }
+            PrintSeparator();
+        }
+
+        private void HandleRunAll()
+        {
+            var jobs = _viewModel.GetAllJobs();
+            if (jobs.Count == 0)
+            {
+                WriteLineColor(Fr("Aucun job configure.", "No jobs configured."), ConsoleColor.Yellow);
+                return;
+            }
+
+            PrintSeparator();
+            WriteLineColor(Fr($"  Execution sequentielle de {jobs.Count} job(s)...",
+                $"  Running {jobs.Count} job(s) sequentially..."), ConsoleColor.Cyan);
+            PrintSeparator();
+
+            int success = 0;
+            int failed = 0;
+            var totalSw = Stopwatch.StartNew();
+
+            for (int i = 0; i < jobs.Count; i++)
+            {
+                var job = jobs[i];
+                WriteColor($"  [{i}] {job.Name} ", ConsoleColor.White);
+
+                var sw = Stopwatch.StartNew();
+                try
+                {
+                    _viewModel.ExecuteJob(i);
+                    sw.Stop();
+                    WriteLineColor($"OK ({sw.ElapsedMilliseconds} ms)", ConsoleColor.Green);
+                    success++;
+                }
+                catch (Exception ex)
+                {
+                    sw.Stop();
+                    WriteLineColor($"ERREUR: {ex.Message}", ConsoleColor.Red);
+                    failed++;
+                }
+            }
+
+            totalSw.Stop();
+            PrintSeparator();
+            WriteColor(Fr("  Resultat: ", "  Result:   "), ConsoleColor.Cyan);
+            WriteColor($"{success} ", ConsoleColor.Green);
+            WriteColor(Fr("reussi(s)", "succeeded"), ConsoleColor.Green);
+            if (failed > 0)
+            {
+                WriteColor($", {failed} ", ConsoleColor.Red);
+                WriteColor(Fr("echoue(s)", "failed"), ConsoleColor.Red);
+            }
+            Console.WriteLine();
+            WriteColor(Fr("  Duree totale: ", "  Total time:   "), ConsoleColor.DarkGray);
+            Console.WriteLine($"{totalSw.ElapsedMilliseconds} ms");
+            PrintSeparator();
+        }
+
+        private void HandleDelete(string[] parts)
+        {
+            if (parts.Length < 2)
+            {
+                WriteLineColor(Fr("Usage : delete <index> (ex: delete 0)", "Usage: delete <index> (ex: delete 0)"), ConsoleColor.Yellow);
+                return;
+            }
+
+            if (!int.TryParse(parts[1], out int deleteIndex))
+            {
+                WriteLineColor(Fr("Index invalide.", "Invalid index."), ConsoleColor.Red);
+                return;
+            }
+
+            var jobs = _viewModel.GetAllJobs();
+            if (deleteIndex >= 0 && deleteIndex < jobs.Count)
+            {
+                string jobName = jobs[deleteIndex].Name;
+                bool success = _viewModel.DeleteJob(deleteIndex);
+                if (success)
+                    WriteLineColor(Fr($"Job [{deleteIndex}] '{jobName}' supprime.", $"Job [{deleteIndex}] '{jobName}' deleted."), ConsoleColor.Green);
+                else
+                    WriteLineColor(Fr($"Impossible de supprimer le job {deleteIndex}.", $"Cannot delete job {deleteIndex}."), ConsoleColor.Red);
+            }
+            else
+            {
+                WriteLineColor(Fr($"Aucun job a l'index {deleteIndex}.", $"No job at index {deleteIndex}."), ConsoleColor.Red);
             }
         }
 
@@ -179,37 +304,36 @@ namespace EasySave.View
         /// </summary>
         private void CreateNewJob()
         {
-            Console.WriteLine(_language == "fr"
-                ? "=== Création d'un nouveau job de sauvegarde ==="
-                : "=== Create a new backup job ===");
+            var jobs = _viewModel.GetAllJobs();
+            if (jobs.Count >= 5)
+            {
+                WriteLineColor(Fr("Limite de 5 jobs atteinte. Supprimez un job d'abord.",
+                    "5 job limit reached. Delete a job first."), ConsoleColor.Red);
+                return;
+            }
+
+            PrintSeparator();
+            WriteLineColor(Fr("  Nouveau job de sauvegarde", "  New backup job"), ConsoleColor.Cyan);
+            WriteLineColor(Fr($"  Slots disponibles: {5 - jobs.Count}/5", $"  Available slots: {5 - jobs.Count}/5"), ConsoleColor.DarkGray);
+            PrintSeparator();
 
             // Nom du job
-            Console.Write(_language == "fr"
-                ? "Nom du job : "
-                : "Job name: ");
+            Console.Write(Fr("  Nom du job: ", "  Job name: "));
             string name = Console.ReadLine();
 
             // Répertoire source
-            Console.Write(_language == "fr"
-                ? "Répertoire source : "
-                : "Source directory: ");
+            Console.Write(Fr("  Repertoire source: ", "  Source directory: "));
             string sourceDir = Console.ReadLine();
 
             // Répertoire cible
-            Console.Write(_language == "fr"
-                ? "Répertoire cible : "
-                : "Target directory: ");
+            Console.Write(Fr("  Repertoire cible: ", "  Target directory: "));
             string targetDir = Console.ReadLine();
 
             // Type de sauvegarde
-            Console.WriteLine(_language == "fr"
-                ? "Type de sauvegarde :"
-                : "Backup type:");
-            Console.WriteLine("1 - Full");
-            Console.WriteLine("2 - Differential");
-            Console.Write(_language == "fr"
-                ? "Choix (1-2) : "
-                : "Choice (1-2): ");
+            Console.WriteLine(Fr("  Type de sauvegarde:", "  Backup type:"));
+            WriteColor("    1 ", ConsoleColor.Magenta); Console.WriteLine("- Full");
+            WriteColor("    2 ", ConsoleColor.Blue); Console.WriteLine("- Differential");
+            Console.Write(Fr("  Choix (1-2): ", "  Choice (1-2): "));
 
             JobType type = JobType.Full;
             string typeChoice = Console.ReadLine();
@@ -219,18 +343,17 @@ namespace EasySave.View
             // Création du job via le ViewModel
             bool success = _viewModel.CreateJob(name, sourceDir, targetDir, type);
 
+            PrintSeparator();
             if (success)
             {
-                Console.WriteLine(_language == "fr"
-                    ? $"Job '{name}' créé avec succès !"
-                    : $"Job '{name}' created successfully!");
+                WriteLineColor(Fr($"  Job '{name}' cree avec succes!", $"  Job '{name}' created successfully!"), ConsoleColor.Green);
             }
             else
             {
-                Console.WriteLine(_language == "fr"
-                    ? "Erreur lors de la création du job. Vérifiez les informations et que vous n'avez pas dépassé la limite de 5 jobs."
-                    : "Error creating job. Check the information and ensure you haven't exceeded the 5 job limit.");
+                WriteLineColor(Fr("  Erreur lors de la creation du job. Verifiez les informations.",
+                    "  Error creating job. Check the provided information."), ConsoleColor.Red);
             }
+            PrintSeparator();
         }
 
         /// <summary>
@@ -239,28 +362,42 @@ namespace EasySave.View
         private void ListAllJobs()
         {
             var jobs = _viewModel.GetAllJobs();
-            
-            Console.WriteLine(_language == "fr"
-                ? "=== Liste des travaux de sauvegarde ==="
-                : "=== List of backup jobs ===");
+
+            PrintSeparator();
+            WriteColor(Fr("  Travaux de sauvegarde", "  Backup jobs"), ConsoleColor.Cyan);
+            var countColor = jobs.Count >= 5 ? ConsoleColor.Red : ConsoleColor.Green;
+            WriteLineColor($" ({jobs.Count}/5)", countColor);
+            PrintSeparator();
 
             if (jobs.Count == 0)
             {
-                Console.WriteLine(_language == "fr"
-                    ? "Aucun travail de sauvegarde configuré."
-                    : "No backup jobs configured.");
+                WriteLineColor(Fr("  Aucun job configure. Utilisez 'create' pour en ajouter.",
+                    "  No jobs configured. Use 'create' to add one."), ConsoleColor.DarkGray);
+                PrintSeparator();
                 return;
             }
 
             for (int i = 0; i < jobs.Count; i++)
             {
                 var job = jobs[i];
-                Console.WriteLine($"[{i}] {job.Name}");
-                Console.WriteLine($"    {(_language == "fr" ? "Source" : "Source")}: {job.SourceDir}");
-                Console.WriteLine($"    {(_language == "fr" ? "Cible" : "Target")}: {job.TargetDir}");
-                Console.WriteLine($"    {(_language == "fr" ? "Type" : "Type")}: {job.Type}");
-                Console.WriteLine();
+                var typeColor = job.Type == JobType.Full ? ConsoleColor.Magenta : ConsoleColor.Blue;
+
+                WriteColor($"  [{i}] ", ConsoleColor.Yellow);
+                WriteColor(job.Name, ConsoleColor.White);
+                WriteColor(" (", ConsoleColor.DarkGray);
+                WriteColor(job.Type.ToString(), typeColor);
+                WriteLineColor(")", ConsoleColor.DarkGray);
+
+                WriteColor($"      {Fr("Source", "Source")}: ", ConsoleColor.DarkGray);
+                Console.WriteLine(job.SourceDir);
+                WriteColor($"      {Fr("Cible", "Target")}:  ", ConsoleColor.DarkGray);
+                Console.WriteLine(job.TargetDir);
+
+                if (i < jobs.Count - 1)
+                    Console.WriteLine();
             }
+
+            PrintSeparator();
         }
     }
 }

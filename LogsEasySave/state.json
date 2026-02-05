@@ -1,0 +1,12 @@
+{
+  "JobName": "Test2",
+  "LastActionTimestamp": "2026-02-05T19:36:37.0031894+01:00",
+  "Status": "End",
+  "TotalFilesToCopy": 2,
+  "TotalFilesSize": 5,
+  "Progress": 100,
+  "RemainingFiles": 0,
+  "RemainingSize": 0,
+  "CurrentSourceFile": "",
+  "CurrentTargetFile": ""
+}
