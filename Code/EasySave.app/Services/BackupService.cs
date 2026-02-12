@@ -14,13 +14,16 @@ namespace EasySave.Services
         // Dépendances
         private readonly LoggerService _logger;
         private readonly RealTimeStateService _realTimeStateService;
+        private readonly ICryptoService _cryptoService;
+
 
         // Constructeur
         public BackupService()
         {
-            string logsDir = Path.Combine(@"C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\EasySave", "LogsEasySave", "Logs");
+            string logsDir = Path.Combine(@"C:\Users\aouka\OneDrive\Documents\EasySave\LogsEasySave\Logs", "LogsEasySave", "Logs");
             _logger = new LoggerService(logsDir);
             _realTimeStateService = new RealTimeStateService();
+            _cryptoService = cryptoService;
         }
 
         // Méthode principale : exécutera une sauvegarde
@@ -186,6 +189,12 @@ namespace EasySave.Services
                 File.Copy(sourceFile, targetFile, overwrite: true);
                 sw.Stop();
 
+                int cryptoTimeMs = 0;
+                if (_configService.ShouldEncrypt(targetFile)) 
+                {
+                    cryptoTimeMs = _cryptoSoftService.Encrypt(targetFile); 
+                }
+
                 var entry = new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -194,6 +203,7 @@ namespace EasySave.Services
                     TargetPath = targetFile,
                     FileSize = fileSize,
                     TransferTime = (int)sw.ElapsedMilliseconds
+                    CryptoTimeMs = cryptoTimeMs
                 };
 
                 _logger.SaveLog(entry);
@@ -225,4 +235,10 @@ namespace EasySave.Services
             return size;
         }
     }
-}
+    private bool ShouldEncrypt(string filePath)
+        {
+            var ext = Path.GetExtension(filePath).ToLowerInvariant();
+            return _configService.CryptoExtensions.Contains(ext);
+        }
+
+    }

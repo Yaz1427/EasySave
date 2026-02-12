@@ -12,5 +12,7 @@ namespace EasyLog.Models
 		public string TargetPath { get; set; }  // Adresse destination (UNC)
 		public long FileSize { get; set; }      // Taille du fichier
 		public int TransferTime { get; set; }   // Temps de transfert en ms (négatif si erreur)
-	}
+        public int CryptoTimeMs { get; set; }  // Temps de cryptage en ms : 0 pas de cryptage, >0 temps, <0 erreur
+
+    }
 }
