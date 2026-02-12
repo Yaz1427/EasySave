@@ -16,11 +16,21 @@ namespace EasySave.Services
         private readonly RealTimeStateService _realTimeStateService;
 
         // Constructeur
-        public BackupService()
+        public BackupService(LogFormat logFormat = LogFormat.JSON)
         {
-            string logsDir = Path.Combine(@"C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\EasySave", "LogsEasySave", "Logs");
-            _logger = new LoggerService(logsDir);
+            string logsDir = Path.Combine(@"C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\EasySave\LogsEasySave\Logs", "LogsEasySave", "Logs");
+            _logger = new LoggerService(logsDir, logFormat);
             _realTimeStateService = new RealTimeStateService();
+        }
+
+        public void SetLogFormat(LogFormat format)
+        {
+            _logger.SetLogFormat(format);
+        }
+
+        public LogFormat GetLogFormat()
+        {
+            return _logger.GetLogFormat();
         }
 
         // Méthode principale : exécutera une sauvegarde

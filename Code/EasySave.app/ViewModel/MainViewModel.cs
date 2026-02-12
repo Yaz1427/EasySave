@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EasySave.Services;
 using EasySave.Models;
+using EasyLog.Models;
 
 namespace EasySave.ViewModel
 {
@@ -23,7 +24,10 @@ namespace EasySave.ViewModel
         {
             // On instancie les services (développés par tes collègues)
             _configService = new ConfigService();
-            _backupService = new BackupService();
+
+            // Charger le format de log depuis les parametres
+            LogFormat logFormat = _configService.LoadLogFormat();
+            _backupService = new BackupService(logFormat);
 
             // On charge la liste des 5 travaux au démarrage
             _jobs = _configService.LoadJobs();
@@ -110,6 +114,23 @@ namespace EasySave.ViewModel
         public List<BackupJob> GetAllJobs()
         {
             return _jobs.ToList();
+        }
+
+        /// <summary>
+        /// Change le format du fichier log (JSON ou XML) et persiste le choix
+        /// </summary>
+        public void SetLogFormat(LogFormat format)
+        {
+            _backupService.SetLogFormat(format);
+            _configService.SaveLogFormat(format);
+        }
+
+        /// <summary>
+        /// Retourne le format de log actuel
+        /// </summary>
+        public LogFormat GetLogFormat()
+        {
+            return _backupService.GetLogFormat();
         }
 
         // Propriété pour que la vue puisse éventuellement lister les noms des jobs

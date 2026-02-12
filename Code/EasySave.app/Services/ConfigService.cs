@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using EasySave.Models;
+using EasyLog.Models;
 
 namespace EasySave.Services
 {
@@ -13,19 +14,25 @@ namespace EasySave.Services
     {
         private const int MaxJobs = 5; //Maximum 5 travaux
         private const string JobsFileName = "jobs.json"; //Nom du fichier
+        private const string SettingsFileName = "settings.json"; //Nom du fichier de parametres
 
-        // Verrouillage pour éviter 2 écritures/lectures simultanées
+        // Verrouillage pour eviter 2 ecritures/lectures simultanees
         private static readonly object _lock = new object();
 
         private readonly string _jobsFilePath; //Chemin du fichier
-        private readonly JsonSerializerOptions _jsonOptions; //Options de sérialisation JSON
+        private readonly string _settingsFilePath; //Chemin du fichier de parametres
+        private readonly JsonSerializerOptions _jsonOptions; //Options de serialisation JSON
 
         public ConfigService(string? jobsFilePath = null)
         {
-            // Par défaut : jobs.json dans le dossier où l'appli est lancée
+            // Par defaut : jobs.json dans le dossier ou l'appli est lancee
             _jobsFilePath = string.IsNullOrWhiteSpace(jobsFilePath)
                 ? Path.Combine(AppContext.BaseDirectory, JobsFileName)
                 : jobsFilePath;
+
+            _settingsFilePath = Path.Combine(
+                Path.GetDirectoryName(_jobsFilePath) ?? AppContext.BaseDirectory,
+                SettingsFileName);
 
             _jsonOptions = new JsonSerializerOptions
             {
@@ -43,7 +50,7 @@ namespace EasySave.Services
                     if (!File.Exists(_jobsFilePath))
                         return new List<BackupJob>();
 
-                    var json = File.ReadAllText(_jobsFilePath); //Charge le fichier en mémoire
+                    var json = File.ReadAllText(_jobsFilePath); //Charge le fichier en memoire
 
                     if (string.IsNullOrWhiteSpace(json))
                         return new List<BackupJob>();
@@ -61,8 +68,7 @@ namespace EasySave.Services
                 }
                 catch // quoi faire si sa se passe mal
                 {
-                    // En cas de JSON corrompu ou autre : on revient à une liste vide
-                    // (Tu peux logguer l'erreur via EasyLog si tu veux)
+                    // En cas de JSON corrompu ou autre : on revient a une liste vide
                     return new List<BackupJob>();
                 }
             }
@@ -75,7 +81,7 @@ namespace EasySave.Services
 
             lock (_lock)
             {
-                // Sécurité : max 5 + pas de null + jobs valides
+                // Securite : max 5 + pas de null + jobs valides
                 var cleaned = jobs
                     .Where(j => j != null)
                     .Where(IsValidJob)
@@ -88,7 +94,7 @@ namespace EasySave.Services
 
                 var json = JsonSerializer.Serialize(cleaned, _jsonOptions);
 
-                // Écriture atomique; soit l'écriture réussi completement soit rien n'est modifié (évite de casser le fichier si crash pendant écriture)
+                // Ecriture atomique
                 var tempPath = _jobsFilePath + ".tmp";
                 File.WriteAllText(tempPath, json);
                 File.Copy(tempPath, _jobsFilePath, overwrite: true);
@@ -96,11 +102,58 @@ namespace EasySave.Services
             }
         }
 
+        /// <summary>
+        /// Charge le format de log depuis settings.json (JSON par defaut)
+        /// </summary>
+        public LogFormat LoadLogFormat()
+        {
+            lock (_lock)
+            {
+                try
+                {
+                    if (!File.Exists(_settingsFilePath))
+                        return LogFormat.JSON;
+
+                    var json = File.ReadAllText(_settingsFilePath);
+                    if (string.IsNullOrWhiteSpace(json))
+                        return LogFormat.JSON;
+
+                    var settings = JsonSerializer.Deserialize<AppSettings>(json, _jsonOptions);
+                    if (settings != null && Enum.IsDefined(typeof(LogFormat), settings.LogFormat))
+                        return settings.LogFormat;
+
+                    return LogFormat.JSON;
+                }
+                catch
+                {
+                    return LogFormat.JSON;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sauvegarde le format de log dans settings.json
+        /// </summary>
+        public void SaveLogFormat(LogFormat format)
+        {
+            lock (_lock)
+            {
+                var settings = new AppSettings { LogFormat = format };
+
+                var directory = Path.GetDirectoryName(_settingsFilePath);
+                if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+
+                var json = JsonSerializer.Serialize(settings, _jsonOptions);
+                File.WriteAllText(_settingsFilePath, json);
+            }
+        }
+
         // ---------------------------
         // Helpers
         // ---------------------------
 
-        private static bool IsValidJob(BackupJob job) // Vérifie si un job est valide
+        private static bool IsValidJob(BackupJob job) // Verifie si un job est valide
         {
             if (job == null) return false;
 
@@ -108,10 +161,15 @@ namespace EasySave.Services
             if (string.IsNullOrWhiteSpace(job.SourceDir)) return false;
             if (string.IsNullOrWhiteSpace(job.TargetDir)) return false;
 
-            //évite les sauvegardes vers le même répertoire
             return true;
+        }
+
+        /// <summary>
+        /// Classe interne pour les parametres de l'application
+        /// </summary>
+        private class AppSettings
+        {
+            public LogFormat LogFormat { get; set; } = LogFormat.JSON;
         }
     }
 }
-
-        

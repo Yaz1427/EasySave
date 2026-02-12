@@ -1,4 +1,4 @@
-# EasySave v1.0
+# EasySave v1.1
 
 Application console de sauvegarde de fichiers developpee en C# (.NET).
 Projet realise dans le cadre du module Genie Logiciel - CESI 3eme annee.
@@ -12,8 +12,9 @@ Projet realise dans le cadre du module Genie Logiciel - CESI 3eme annee.
 - Copie recursive de tous les fichiers et sous-repertoires
 - Interface bilingue (Francais / English)
 - Execution interactive ou via ligne de commande
-- Fichier log journalier (un fichier JSON par jour)
+- Fichier log journalier (format au choix : **JSON** ou **XML**)
 - Fichier d'etat temps reel (state.json)
+- Choix du format de log persistant (settings.json)
 
 ## Architecture
 
@@ -29,8 +30,8 @@ Code/
     Program.cs             <- Point d'entree
 
   EasySave.dll/            <- Librairie EasyLog (DLL)
-    Models/                <- LogEntry
-    Services/              <- LoggerService
+    Models/                <- LogEntry, LogFormat
+    Services/              <- LoggerService (JSON + XML)
 ```
 
 La librairie EasyLog.dll est un projet separe (Dynamic Link Library) qui gere l'ecriture des logs journaliers. Elle est referencee par l'application principale et peut etre reutilisee dans d'autres projets.
@@ -64,6 +65,7 @@ Commandes disponibles :
 | `create`         | Creer un nouveau job de sauvegarde   |
 | `list`           | Lister les jobs configures           |
 | `delete <index>` | Supprimer un job (ex: delete 0)      |
+| `logformat`      | Changer le format de log (JSON/XML)  |
 | `exit`           | Quitter l'application                |
 
 ### Mode ligne de commande
@@ -78,17 +80,18 @@ EasySave.exe "1;3"
 
 ## Fichiers generes
 
-Tous les fichiers sont au format JSON avec indentation pour lisibilite.
+Les fichiers de log sont au format choisi par l'utilisateur (JSON ou XML) avec indentation pour lisibilite.
 
 ### Configuration
 
 - `jobs.json` : liste des travaux de sauvegarde (dans le repertoire de l'executable)
+- `settings.json` : parametres de l'application (format de log)
 
 ### Logs et etat
 
 Emplacement : `LogsEasySave/` (a la racine du projet)
 
-- `LogsEasySave/Logs/YYYY-MM-DD.json` : log journalier (une entree par fichier copie)
+- `LogsEasySave/Logs/YYYY-MM-DD.json` ou `YYYY-MM-DD.xml` : log journalier (selon le format choisi)
 - `LogsEasySave/state.json` : etat temps reel du dernier travail en cours
 
 ### Contenu du log journalier
