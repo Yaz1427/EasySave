@@ -1,13 +1,24 @@
 # EasySave v1.1
 
-Application console de sauvegarde de fichiers developpee en C# (.NET).
+Application graphique (WPF) de sauvegarde de fichiers developpee en C# (.NET 8).
 Projet realise dans le cadre du module Genie Logiciel - CESI 3eme annee.
 
 ---
 
+## Nouveautes v2.0
+
+- Interface graphique WPF (remplacement de la console)
+- Cryptage des fichiers integre (AES-256 ou XOR, au choix dans les parametres)
+- Detection de logiciel metier (blocage de la sauvegarde si le processus est actif)
+- Arret de sauvegarde en cours (bouton Stop)
+- Logs triables par colonne (clic sur l'en-tete avec indicateur fleche)
+- Support de 3 langues : English, Francais, Taqbaylit (Kabyle)
+- Format de log configurable (JSON ou XML)
+- Sauvegarde du dossier entier (le dossier source est conserve tel quel dans la cible)
+
 ## Fonctionnalites
 
-- Creation et gestion de jusqu'a 5 travaux de sauvegarde
+- Creation, edition et suppression de travaux de sauvegarde
 - Sauvegarde complete (Full) et differentielle (Differential)
 - Copie recursive de tous les fichiers et sous-repertoires
 - Interface bilingue (Francais / English)
@@ -22,34 +33,33 @@ Le projet suit le pattern MVVM :
 
 ```
 Code/
-  EasySave.app/            <- Application console
-    Model/                 <- Modeles de donnees (BackupJob, RealTimeState)
-    View/                  <- Interface console (ConsoleView)
+  EasySave.app/            <- Application WPF
+    Model/                 <- Modeles de donnees (BackupJob, RealTimeState, AppSettings)
+    View/                  <- Interface graphique (MainWindow.xaml)
     ViewModel/             <- Logique de coordination (MainViewModel)
-    Services/              <- Services metier (BackupService, ConfigService, RealTimeStateService)
-    Program.cs             <- Point d'entree
+    Services/              <- Services metier (BackupService, ConfigService, CryptoSoftService, etc.)
+    Resources/             <- Dictionnaires de langues (Lang_en, Lang_fr, Lang_kab)
 
   EasySave.dll/            <- Librairie EasyLog (DLL)
     Models/                <- LogEntry, LogFormat
     Services/              <- LoggerService (JSON + XML)
 ```
 
-La librairie EasyLog.dll est un projet separe (Dynamic Link Library) qui gere l'ecriture des logs journaliers. Elle est referencee par l'application principale et peut etre reutilisee dans d'autres projets.
+La librairie EasyLog.dll est un projet separe (Dynamic Link Library) qui gere l'ecriture des logs. Elle est referencee par l'application principale et peut etre reutilisee dans d'autres projets.
 
 ## Prerequis
 
-- .NET 10.0 SDK (application)
-- .NET 8.0 SDK (librairie EasyLog)
+- .NET 8.0 SDK
 
 ## Compilation
 
 ```bash
-dotnet build Code/EasySave.app/EasySave.csproj
+dotnet build EasySave.sln
 ```
 
 ## Utilisation
 
-### Mode interactif
+Lancer l'application :
 
 ```bash
 dotnet run --project Code/EasySave.app/EasySave.csproj
@@ -68,15 +78,22 @@ Commandes disponibles :
 | `logformat`      | Changer le format de log (JSON/XML)  |
 | `exit`           | Quitter l'application                |
 
-### Mode ligne de commande
+| Onglet       | Description                                      |
+|--------------|--------------------------------------------------|
+| **Jobs**     | Liste des travaux, execution, arret, suppression  |
+| **Create/Edit** | Creation et modification de travaux            |
+| **Logs**     | Visualisation des logs avec tri par colonne       |
+| **Settings** | Langue, format de log, mode de cryptage, extensions, logiciel metier |
 
-```bash
-# Executer les jobs 1 a 3
-EasySave.exe 1-3
+### Parametres disponibles
 
-# Executer les jobs 1 et 3
-EasySave.exe "1;3"
-```
+| Parametre              | Description                                           |
+|------------------------|-------------------------------------------------------|
+| Langue                 | English / Francais / Taqbaylit                        |
+| Format de log          | JSON ou XML                                           |
+| Mode de cryptage       | AES-256 (chiffrement fort) ou XOR (chiffrement leger) |
+| Extensions a crypter   | Extensions de fichiers a chiffrer (ex: .txt; .docx)   |
+| Logiciel metier        | Nom du processus qui bloque la sauvegarde             |
 
 ## Fichiers generes
 
@@ -103,6 +120,7 @@ Chaque entree contient :
 - Chemin complet du fichier de destination
 - Taille du fichier (en octets)
 - Temps de transfert en ms (negatif si erreur)
+- Temps de cryptage en ms (0 si non crypte)
 
 ### Contenu du fichier d'etat
 

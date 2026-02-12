@@ -1,5 +1,9 @@
 <Solution>
+<<<<<<< HEAD
+  <Project Path="../../../../../../../../ProjetEasySave/Code/EasySave.app/EasySave.csproj" />
+  <Project Path="../../../../../../../../ProjetEasySave/Code/EasySave.dll/EasyLog.csproj" />
+=======
   <Project Path="Code/EasySave.app/EasySave.csproj" />
   <Project Path="Code/EasySave.dll/EasyLog.csproj" />
-  <Project Path="EasySave.GUI/EasySave.GUI.csproj" />
+>>>>>>> origin/main
 </Solution>

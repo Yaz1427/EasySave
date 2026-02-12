@@ -1,5 +1,3 @@
-//ConfigService.cs
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,23 +10,26 @@ namespace EasySave.Services
 {
     public class ConfigService
     {
-        private const int MaxJobs = 5; //Maximum 5 travaux
-        private const string JobsFileName = "jobs.json"; //Nom du fichier
-        private const string SettingsFileName = "settings.json"; //Nom du fichier de parametres
+        private const string JobsFileName = "jobs.json";
+        private const string SettingsFileName = "settings.json";
 
-        // Verrouillage pour eviter 2 ecritures/lectures simultanees
         private static readonly object _lock = new object();
 
-        private readonly string _jobsFilePath; //Chemin du fichier
-        private readonly string _settingsFilePath; //Chemin du fichier de parametres
-        private readonly JsonSerializerOptions _jsonOptions; //Options de serialisation JSON
+        private readonly string _jobsFilePath;
+        private readonly string _settingsFilePath;
+        private readonly JsonSerializerOptions _jsonOptions;
 
-        public ConfigService(string? jobsFilePath = null)
+        public ConfigService(string? configDirectory = null)
         {
-            // Par defaut : jobs.json dans le dossier ou l'appli est lancee
-            _jobsFilePath = string.IsNullOrWhiteSpace(jobsFilePath)
-                ? Path.Combine(AppContext.BaseDirectory, JobsFileName)
-                : jobsFilePath;
+            string configDir = string.IsNullOrWhiteSpace(configDirectory)
+                ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave")
+                : configDirectory;
+
+            if (!Directory.Exists(configDir))
+                Directory.CreateDirectory(configDir);
+
+            _jobsFilePath = Path.Combine(configDir, JobsFileName);
+            _settingsFilePath = Path.Combine(configDir, SettingsFileName);
 
             _settingsFilePath = Path.Combine(
                 Path.GetDirectoryName(_jobsFilePath) ?? AppContext.BaseDirectory,
@@ -41,7 +42,9 @@ namespace EasySave.Services
             };
         }
 
-        public List<BackupJob> LoadJobs() // Lit jobs.json et retourne la liste des jobs
+        // --- Jobs ---
+
+        public List<BackupJob> LoadJobs()
         {
             lock (_lock)
             {
@@ -50,7 +53,7 @@ namespace EasySave.Services
                     if (!File.Exists(_jobsFilePath))
                         return new List<BackupJob>();
 
-                    var json = File.ReadAllText(_jobsFilePath); //Charge le fichier en memoire
+                    var json = File.ReadAllText(_jobsFilePath);
 
                     if (string.IsNullOrWhiteSpace(json))
                         return new List<BackupJob>();
@@ -58,34 +61,26 @@ namespace EasySave.Services
                     var jobs = JsonSerializer.Deserialize<List<BackupJob>>(json, _jsonOptions)
                                ?? new List<BackupJob>();
 
-                    // max 5, supprime les jobs null
-                    jobs = jobs.Where(j => j != null).Take(MaxJobs).ToList();
-
-                    // Optionnel : enlever les jobs "vides" (ex: nom vide)
-                    jobs = jobs.Where(IsValidJob).ToList();
-
+                    // v2.0: unlimited jobs, just filter nulls and invalid
+                    jobs = jobs.Where(j => j != null).Where(IsValidJob).ToList();
                     return jobs;
                 }
-                catch // quoi faire si sa se passe mal
+                catch
                 {
-                    // En cas de JSON corrompu ou autre : on revient a une liste vide
                     return new List<BackupJob>();
                 }
             }
         }
 
-        /// Sauvegarde des jobs dans jobs.json 
         public void SaveJobs(List<BackupJob> jobs)
         {
             if (jobs == null) throw new ArgumentNullException(nameof(jobs));
 
             lock (_lock)
             {
-                // Securite : max 5 + pas de null + jobs valides
                 var cleaned = jobs
                     .Where(j => j != null)
                     .Where(IsValidJob)
-                    .Take(MaxJobs)
                     .ToList();
 
                 var directory = Path.GetDirectoryName(_jobsFilePath);
@@ -94,7 +89,6 @@ namespace EasySave.Services
 
                 var json = JsonSerializer.Serialize(cleaned, _jsonOptions);
 
-                // Ecriture atomique
                 var tempPath = _jobsFilePath + ".tmp";
                 File.WriteAllText(tempPath, json);
                 File.Copy(tempPath, _jobsFilePath, overwrite: true);
@@ -131,15 +125,36 @@ namespace EasySave.Services
             }
         }
 
-        /// <summary>
-        /// Sauvegarde le format de log dans settings.json
-        /// </summary>
-        public void SaveLogFormat(LogFormat format)
+        // --- Settings ---
+
+        public AppSettings LoadSettings()
         {
             lock (_lock)
             {
-                var settings = new AppSettings { LogFormat = format };
+                try
+                {
+                    if (!File.Exists(_settingsFilePath))
+                        return new AppSettings();
 
+                    var json = File.ReadAllText(_settingsFilePath);
+                    if (string.IsNullOrWhiteSpace(json))
+                        return new AppSettings();
+
+                    return JsonSerializer.Deserialize<AppSettings>(json, _jsonOptions) ?? new AppSettings();
+                }
+                catch
+                {
+                    return new AppSettings();
+                }
+            }
+        }
+
+        public void SaveSettings(AppSettings settings)
+        {
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+
+            lock (_lock)
+            {
                 var directory = Path.GetDirectoryName(_settingsFilePath);
                 if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
@@ -149,18 +164,14 @@ namespace EasySave.Services
             }
         }
 
-        // ---------------------------
-        // Helpers
-        // ---------------------------
+        // --- Helpers ---
 
-        private static bool IsValidJob(BackupJob job) // Verifie si un job est valide
+        private static bool IsValidJob(BackupJob job)
         {
             if (job == null) return false;
-
             if (string.IsNullOrWhiteSpace(job.Name)) return false;
             if (string.IsNullOrWhiteSpace(job.SourceDir)) return false;
             if (string.IsNullOrWhiteSpace(job.TargetDir)) return false;
-
             return true;
         }
 
