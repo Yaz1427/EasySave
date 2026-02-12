@@ -1,11 +1,13 @@
 //Program.cs
 
 using System;
-using EasySave.ViewModel;
-using EasySave.View;
+using EasyLog;
+using EasyLog.Models;
+using EasyLog.Services;
 using EasySave.Models;
 using EasySave.Services;
-using EasyLog.Services;
+using EasySave.View;
+using EasySave.ViewModel;
 
 namespace EasySave.App
 {
@@ -53,12 +55,30 @@ namespace EasySave.App
                     }
                 }
             }
-        }
 
-        /// <summary>
-        /// Analyse et exécute les commandes passées directement au .exe
-        /// </summary>
-        private static void ExecuteCommandLineArgs(string arg, MainViewModel vm)
+			var logger = new LoggerService(LogFormat.Json); // ou LogFormat.Xml
+
+			logger.SaveLog(new LogEntry
+			{
+				Timestamp = DateTime.Now,
+				JobName = "TEST",
+				SourcePath = "C:\\Source",
+				TargetPath = "D:\\Target",
+				FileSize = 1234,
+				TransferTime = 50,
+				EncryptTime = 0,
+				Message = "Test log OK"
+			});
+
+			logger.SaveStopLog("TEST", "Stopped: Business software detected (calc.exe)");
+			Console.WriteLine("Logs écrits !");
+
+		}
+
+		/// <summary>
+		/// Analyse et exécute les commandes passées directement au .exe
+		/// </summary>
+		private static void ExecuteCommandLineArgs(string arg, MainViewModel vm)
         {
             try
             {
