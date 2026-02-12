@@ -18,7 +18,7 @@ namespace EasySave.Services
         // Constructeur
         public BackupService()
         {
-            string logsDir = Path.Combine(@"C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\EasySave", "LogsEasySave", "Logs");
+            string logsDir = Path.Combine(@"C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\EasySave\LogsEasySave\Logs", "LogsEasySave", "Logs");
             _logger = new LoggerService(logsDir);
             _realTimeStateService = new RealTimeStateService();
         }
