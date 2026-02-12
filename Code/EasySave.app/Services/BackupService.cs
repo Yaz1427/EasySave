@@ -14,12 +14,23 @@ namespace EasySave.Services
     {
         private readonly LoggerService _logger;
         private readonly RealTimeStateService _realTimeStateService;
+<<<<<<< HEAD
+        private readonly ICryptoService _cryptoService;
+
+=======
         private readonly CryptoSoftService _cryptoSoftService;
         private readonly BusinessSoftwareService _businessSoftwareService;
         private List<string> _encryptExtensions;
+>>>>>>> origin/main
 
         public BackupService(AppSettings settings)
         {
+<<<<<<< HEAD
+            string logsDir = Path.Combine(@"C:\Users\aouka\OneDrive\Documents\EasySave\LogsEasySave\Logs", "LogsEasySave", "Logs");
+            _logger = new LoggerService(logsDir);
+            _realTimeStateService = new RealTimeStateService();
+            _cryptoService = cryptoService;
+=======
             string baseDir = Path.GetFullPath(Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 "..", "..", "..", "..", ".."));
@@ -31,6 +42,7 @@ namespace EasySave.Services
             _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
             _businessSoftwareService = new BusinessSoftwareService(settings.BusinessSoftwareProcess);
             _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
+>>>>>>> origin/main
         }
 
         public void UpdateSettings(AppSettings settings)
@@ -213,6 +225,12 @@ namespace EasySave.Services
                 File.Copy(sourceFile, targetFile, overwrite: true);
                 sw.Stop();
 
+<<<<<<< HEAD
+                int cryptoTimeMs = 0;
+                if (_configService.ShouldEncrypt(targetFile)) 
+                {
+                    cryptoTimeMs = _cryptoSoftService.Encrypt(targetFile); 
+=======
                 // v2.0: Encrypt if needed
                 int encryptionTime = 0;
                 string ext = Path.GetExtension(sourceFile);
@@ -221,6 +239,7 @@ namespace EasySave.Services
                     ("." + e.TrimStart('.')).Equals(ext, StringComparison.OrdinalIgnoreCase)))
                 {
                     encryptionTime = _cryptoSoftService.EncryptFile(targetFile);
+>>>>>>> origin/main
                 }
 
                 var entry = new LogEntry
@@ -230,8 +249,13 @@ namespace EasySave.Services
                     SourcePath = sourceFile,
                     TargetPath = targetFile,
                     FileSize = fileSize,
+<<<<<<< HEAD
+                    TransferTime = (int)sw.ElapsedMilliseconds
+                    CryptoTimeMs = cryptoTimeMs
+=======
                     TransferTime = (int)sw.ElapsedMilliseconds,
                     EncryptionTime = encryptionTime
+>>>>>>> origin/main
                 };
 
                 _logger.SaveLog(entry);
@@ -264,4 +288,10 @@ namespace EasySave.Services
         {
         }
     }
-}
+    private bool ShouldEncrypt(string filePath)
+        {
+            var ext = Path.GetExtension(filePath).ToLowerInvariant();
+            return _configService.CryptoExtensions.Contains(ext);
+        }
+
+    }
