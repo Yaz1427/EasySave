@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+﻿using System;
+=======
+<<<<<<< HEAD
 ﻿using System.Diagnostics;
 
 public class CryptoSoftService : ICryptoService
@@ -39,6 +42,7 @@ public class CryptoSoftService : ICryptoService
         return -process.ExitCode;
 =======
 using System;
+>>>>>>> origin/main
 using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
@@ -87,6 +91,7 @@ namespace EasySave.Services
                 {
                     keyBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(DefaultKey));
                 }
+        };
 
                 byte[] encryptedData;
                 byte[] iv;
