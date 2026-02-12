@@ -1,4 +1,4 @@
-# EasySave v2.0
+# EasySave v1.1
 
 Application graphique (WPF) de sauvegarde de fichiers developpee en C# (.NET 8).
 Projet realise dans le cadre du module Genie Logiciel - CESI 3eme annee.
@@ -21,12 +21,11 @@ Projet realise dans le cadre du module Genie Logiciel - CESI 3eme annee.
 - Creation, edition et suppression de travaux de sauvegarde
 - Sauvegarde complete (Full) et differentielle (Differential)
 - Copie recursive de tous les fichiers et sous-repertoires
-- Cryptage automatique des fichiers selon les extensions configurees (AES-256 / XOR)
-- Temps de cryptage mesure et logue
-- Detection de logiciel metier (arret automatique si le processus est en cours)
-- Visualisation et tri des logs dans l'application
+- Interface bilingue (Francais / English)
+- Execution interactive ou via ligne de commande
+- Fichier log journalier (format au choix : **JSON** ou **XML**)
 - Fichier d'etat temps reel (state.json)
-- Parametres persistants (langue, format de log, extensions, mode de cryptage, logiciel metier)
+- Choix du format de log persistant (settings.json)
 
 ## Architecture
 
@@ -42,10 +41,8 @@ Code/
     Resources/             <- Dictionnaires de langues (Lang_en, Lang_fr, Lang_kab)
 
   EasySave.dll/            <- Librairie EasyLog (DLL)
-    Models/                <- LogEntry
-    Services/              <- LoggerService
-
-  CryptoSoft/              <- Module de cryptage (console, AES-256)
+    Models/                <- LogEntry, LogFormat
+    Services/              <- LoggerService (JSON + XML)
 ```
 
 La librairie EasyLog.dll est un projet separe (Dynamic Link Library) qui gere l'ecriture des logs. Elle est referencee par l'application principale et peut etre reutilisee dans d'autres projets.
@@ -68,7 +65,18 @@ Lancer l'application :
 dotnet run --project Code/EasySave.app/EasySave.csproj
 ```
 
-L'interface graphique comporte 4 onglets :
+Commandes disponibles :
+
+| Commande         | Description                          |
+|------------------|--------------------------------------|
+| `help`           | Afficher le menu                     |
+| `run <index>`    | Executer un job (ex: run 0)          |
+| `runall`         | Executer tous les jobs               |
+| `create`         | Creer un nouveau job de sauvegarde   |
+| `list`           | Lister les jobs configures           |
+| `delete <index>` | Supprimer un job (ex: delete 0)      |
+| `logformat`      | Changer le format de log (JSON/XML)  |
+| `exit`           | Quitter l'application                |
 
 | Onglet       | Description                                      |
 |--------------|--------------------------------------------------|
@@ -89,16 +97,18 @@ L'interface graphique comporte 4 onglets :
 
 ## Fichiers generes
 
+Les fichiers de log sont au format choisi par l'utilisateur (JSON ou XML) avec indentation pour lisibilite.
+
 ### Configuration
 
 - `jobs.json` : liste des travaux de sauvegarde (dans le repertoire de l'executable)
-- `settings.json` : parametres de l'application
+- `settings.json` : parametres de l'application (format de log)
 
 ### Logs et etat
 
 Emplacement : `LogsEasySave/` (a la racine du projet)
 
-- `LogsEasySave/YYYY-MM-DD.json` (ou `.xml`) : log journalier (une entree par fichier copie)
+- `LogsEasySave/Logs/YYYY-MM-DD.json` ou `YYYY-MM-DD.xml` : log journalier (selon le format choisi)
 - `LogsEasySave/state.json` : etat temps reel du dernier travail en cours
 
 ### Contenu du log journalier

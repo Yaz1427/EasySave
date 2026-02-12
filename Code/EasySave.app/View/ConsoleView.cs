@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using EasySave.ViewModel;
 using EasySave.Models;
+using EasyLog.Models;
 
 namespace EasySave.View
 {
@@ -79,7 +80,7 @@ namespace EasySave.View
 
             Console.WriteLine();
             WriteLineColor("+-----------------------------------------+", ConsoleColor.Cyan);
-            WriteLineColor("|             EasySave v1.0               |", ConsoleColor.Cyan);
+            WriteLineColor("|             EasySave v1.1               |", ConsoleColor.Cyan);
             WriteLineColor("+-----------------------------------------+", ConsoleColor.Cyan);
 
             WriteColor($"  {Fr("Jobs configures", "Configured jobs")}: ", ConsoleColor.White);
@@ -107,6 +108,9 @@ namespace EasySave.View
 
             WriteColor("  delete <index> ", ConsoleColor.Green);
             Console.WriteLine(Fr("Supprimer un job (ex: delete 0)", "Delete a job (ex: delete 0)"));
+
+            WriteColor("  logformat      ", ConsoleColor.Green);
+            Console.WriteLine(Fr("Changer le format du fichier log (JSON/XML)", "Change log file format (JSON/XML)"));
 
             WriteColor("  exit           ", ConsoleColor.Green);
             Console.WriteLine(Fr("Quitter l'application", "Exit the application"));
@@ -150,6 +154,10 @@ namespace EasySave.View
 
                 case "delete":
                     HandleDelete(parts);
+                    break;
+
+                case "logformat":
+                    HandleLogFormat();
                     break;
 
                 case "exit":
@@ -353,6 +361,33 @@ namespace EasySave.View
                 WriteLineColor(Fr("  Erreur lors de la creation du job. Verifiez les informations.",
                     "  Error creating job. Check the provided information."), ConsoleColor.Red);
             }
+            PrintSeparator();
+        }
+
+        private void HandleLogFormat()
+        {
+            var currentFormat = _viewModel.GetLogFormat();
+            PrintSeparator();
+            WriteColor(Fr("  Format actuel : ", "  Current format: "), ConsoleColor.Cyan);
+            WriteLineColor(currentFormat.ToString(), ConsoleColor.Yellow);
+            PrintSeparator();
+            Console.WriteLine(Fr("  Choisir le format du fichier log :", "  Choose log file format:"));
+            WriteColor("    1 ", ConsoleColor.Green); Console.WriteLine("- JSON");
+            WriteColor("    2 ", ConsoleColor.Green); Console.WriteLine("- XML");
+            Console.Write(Fr("  Choix (1-2): ", "  Choice (1-2): "));
+
+            string choice = Console.ReadLine();
+            LogFormat newFormat;
+            if (choice == "2")
+                newFormat = LogFormat.XML;
+            else
+                newFormat = LogFormat.JSON;
+
+            _viewModel.SetLogFormat(newFormat);
+
+            PrintSeparator();
+            WriteLineColor(Fr($"  Format de log change en {newFormat}.",
+                $"  Log format changed to {newFormat}."), ConsoleColor.Green);
             PrintSeparator();
         }
 

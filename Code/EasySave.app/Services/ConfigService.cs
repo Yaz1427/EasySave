@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using EasySave.Models;
+using EasyLog.Models;
 
 namespace EasySave.Services
 {
@@ -29,6 +30,10 @@ namespace EasySave.Services
 
             _jobsFilePath = Path.Combine(configDir, JobsFileName);
             _settingsFilePath = Path.Combine(configDir, SettingsFileName);
+
+            _settingsFilePath = Path.Combine(
+                Path.GetDirectoryName(_jobsFilePath) ?? AppContext.BaseDirectory,
+                SettingsFileName);
 
             _jsonOptions = new JsonSerializerOptions
             {
@@ -91,6 +96,35 @@ namespace EasySave.Services
             }
         }
 
+        /// <summary>
+        /// Charge le format de log depuis settings.json (JSON par defaut)
+        /// </summary>
+        public LogFormat LoadLogFormat()
+        {
+            lock (_lock)
+            {
+                try
+                {
+                    if (!File.Exists(_settingsFilePath))
+                        return LogFormat.JSON;
+
+                    var json = File.ReadAllText(_settingsFilePath);
+                    if (string.IsNullOrWhiteSpace(json))
+                        return LogFormat.JSON;
+
+                    var settings = JsonSerializer.Deserialize<AppSettings>(json, _jsonOptions);
+                    if (settings != null && Enum.IsDefined(typeof(LogFormat), settings.LogFormat))
+                        return settings.LogFormat;
+
+                    return LogFormat.JSON;
+                }
+                catch
+                {
+                    return LogFormat.JSON;
+                }
+            }
+        }
+
         // --- Settings ---
 
         public AppSettings LoadSettings()
@@ -139,6 +173,14 @@ namespace EasySave.Services
             if (string.IsNullOrWhiteSpace(job.SourceDir)) return false;
             if (string.IsNullOrWhiteSpace(job.TargetDir)) return false;
             return true;
+        }
+
+        /// <summary>
+        /// Classe interne pour les parametres de l'application
+        /// </summary>
+        private class AppSettings
+        {
+            public LogFormat LogFormat { get; set; } = LogFormat.JSON;
         }
     }
 }
