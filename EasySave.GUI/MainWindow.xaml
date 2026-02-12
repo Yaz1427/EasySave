@@ -11,7 +11,7 @@
         Height="600"
         Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="#F4F6F9">
+        Background="#999696">
 
 	<Window.Resources>
 
@@ -76,7 +76,7 @@
 
 		<Style TargetType="DataGridColumnHeader">
 			<Setter Property="Background" Value="#F3F4F6"/>
-			<Setter Property="Foreground" Value="#111827"/>
+			<Setter Property="Foreground" Value="Black"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
 			<Setter Property="BorderThickness" Value="0,0,0,1"/>
 			<Setter Property="BorderBrush" Value="#E5E7EB"/>
@@ -135,14 +135,14 @@
 			<TextBlock Text="EasySave"
                        FontSize="36"
                        FontWeight="Bold"
-                       Foreground="#FF548BD8" HorizontalAlignment="Left" FontFamily="Britannic Bold"/>
+                       Foreground="#FF3F4B5C" HorizontalAlignment="Left" FontFamily="Britannic Bold"/>
 
 			<StackPanel Orientation="Horizontal"
                         Grid.Column="1"
                         VerticalAlignment="Center">
 				<TextBlock
                            VerticalAlignment="Center"
-                           Margin="0,0,5,0" Width="59" FontFamily="Dubai Medium"><Run Text="Lang"/><Run Text="uage"/><Run Language="fr-fr" Text=" "/><Run Text=":"/></TextBlock>
+                           Margin="0,0,5,0" Width="59" FontFamily="Dubai Medium" Foreground="#FF3F4B5C" FontWeight="Bold"><Run Text="Lang"/><Run Text="uage"/><Run Language="fr-fr" Text=" "/><Run Text=":"/></TextBlock>
 				<ComboBox Width="120"
                           ItemsSource="{Binding Languages}"
                           SelectedItem="{Binding SelectedLanguage}"
@@ -152,7 +152,7 @@
 
 		<!-- TABLE CARD -->
 		<Border Grid.Row="1"
-                Background="White"
+                Background="#D4CBCB"
                 CornerRadius="12"
                 Padding="20"
                 Margin="0,20,0,20">
@@ -183,24 +183,24 @@
 
 			<Button Content="{x:Static res:Strings.AddJob}"
                     Style="{StaticResource PrimaryButton}"
-                    Command="{Binding AddJobCommand}" Width="61" FontFamily="Dubai Medium" Background="#FF6091FC"/>
+                    Command="{Binding AddJobCommand}" Width="61" FontFamily="Dubai Medium" Background="#FF3F4B5C" Foreground="#FFD1CACA"/>
 
 			<Button Content="{x:Static res:Strings.DeleteJob}"
                     Style="{StaticResource SecondaryButton}"
-                    Command="{Binding DeleteJobCommand}" Width="70" FontFamily="Dubai Medium" Background="#FF6091FC" Foreground="White"/>
+                    Command="{Binding DeleteJobCommand}" Width="70" FontFamily="Dubai Medium" Background="#FF3F4B5C" Foreground="#FFD1CACA"/>
 
 			<Button Content="{x:Static res:Strings.RunSelected}"
                     Style="{StaticResource SecondaryButton}"
-                    Command="{Binding RunSelectedCommand}" Width="98" Click="Button_Click" FontFamily="Dubai Medium" Foreground="White" Background="#FF6091FC"/>
+                    Command="{Binding RunSelectedCommand}" Width="98" Click="Button_Click" FontFamily="Dubai Medium" Foreground="#FFD1CACA" Background="#FF3F4B5C"/>
 
 			<Button Content="Lancer tout"
                     Style="{StaticResource PrimaryButton}"
-                    Command="{Binding RunAllCommand}" Width="83" FontFamily="Dubai Medium" Background="#FF6091FC"/>
+                    Command="{Binding RunAllCommand}" Width="83" FontFamily="Dubai Medium" Background="#FF3F4B5C" Foreground="#FFD1CACA"/>
 		</StackPanel>
 
 		<!-- STATUS BAR -->
 		<Border Grid.Row="3"
-                Background="White"
+                Background="#D4CBCB"
                 CornerRadius="10"
                 Padding="12"
                 Margin="0,20,0,0">
