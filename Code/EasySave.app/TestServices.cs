@@ -5,7 +5,7 @@ using System.IO;
 using EasySave.ViewModel;
 using EasySave.Models;
 
-namespace EasySave.App
+namespace EasySave.CLI
 {
     /// <summary>
     /// Test complet pour vérifier toutes les fonctionnalités

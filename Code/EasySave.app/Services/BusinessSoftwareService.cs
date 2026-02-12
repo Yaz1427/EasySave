@@ -30,7 +30,10 @@ namespace EasySave.Services
             try
             {
                 var processes = Process.GetProcessesByName(_processName);
-                return processes.Any();
+                bool found = processes.Length > 0;
+                foreach (var p in processes)
+                    p.Dispose();
+                return found;
             }
             catch
             {

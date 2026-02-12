@@ -558,5 +558,43 @@ namespace EasySave.ViewModel
         {
             return Jobs.ToList();
         }
+
+        /// <summary>
+        /// Public overload for console/CLI usage: creates a job with parameters.
+        /// </summary>
+        public bool CreateJob(string name, string sourceDir, string targetDir, JobType type)
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(sourceDir) || string.IsNullOrWhiteSpace(targetDir))
+                return false;
+
+            var newJob = new BackupJob
+            {
+                Name = name.Trim(),
+                SourceDir = sourceDir.Trim(),
+                TargetDir = targetDir.Trim(),
+                Type = type
+            };
+
+            Jobs.Add(newJob);
+            _configService.SaveJobs(Jobs.ToList());
+            StatusMessage = $"Job '{newJob.Name}' created.";
+            return true;
+        }
+
+        /// <summary>
+        /// Public overload for console/CLI usage: deletes a job by index.
+        /// </summary>
+        public bool DeleteJob(int index)
+        {
+            if (index >= 0 && index < Jobs.Count)
+            {
+                string name = Jobs[index].Name;
+                Jobs.RemoveAt(index);
+                _configService.SaveJobs(Jobs.ToList());
+                StatusMessage = $"Job '{name}' deleted.";
+                return true;
+            }
+            return false;
+        }
     }
 }

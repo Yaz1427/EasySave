@@ -120,9 +120,12 @@ namespace EasySave.Services
             Directory.CreateDirectory(actualTargetDir);
 
             var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+            // Pre-compute file sizes to avoid O(n²) disk reads
+            var fileSizes = allFiles.Select(f => new FileInfo(f).Length).ToList();
+            long remainingSize = fileSizes.Sum();
             int processedFiles = 0;
 
-            foreach (var sourceFile in allFiles)
+            for (int idx = 0; idx < allFiles.Count; idx++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -130,6 +133,7 @@ namespace EasySave.Services
                 if (_businessSoftwareService.IsRunning())
                     throw new BusinessSoftwareRunningException();
 
+                var sourceFile = allFiles[idx];
                 var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
                 var targetFile = Path.Combine(actualTargetDir, relativePath);
 
@@ -141,10 +145,11 @@ namespace EasySave.Services
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
                 CopyFileWithTiming(job, sourceFile, targetFile);
 
+                remainingSize -= fileSizes[idx];
                 processedFiles++;
                 state.Progress = (double)processedFiles / allFiles.Count * 100;
                 state.RemainingFiles = allFiles.Count - processedFiles;
-                state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                state.RemainingSize = remainingSize;
                 _realTimeStateService.UpdateState(state);
                 progress?.Report(state.Progress);
             }
@@ -173,9 +178,12 @@ namespace EasySave.Services
                     filesToCopy.Add(sourceFile);
             }
 
+            // Pre-compute file sizes to avoid O(n²) disk reads
+            var fileSizes = filesToCopy.Select(f => new FileInfo(f).Length).ToList();
+            long remainingSize = fileSizes.Sum();
             int processedFiles = 0;
 
-            foreach (var sourceFile in filesToCopy)
+            for (int idx = 0; idx < filesToCopy.Count; idx++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -183,6 +191,7 @@ namespace EasySave.Services
                 if (_businessSoftwareService.IsRunning())
                     throw new BusinessSoftwareRunningException();
 
+                var sourceFile = filesToCopy[idx];
                 var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
                 var targetFile = Path.Combine(actualTargetDir, relativePath);
 
@@ -194,10 +203,11 @@ namespace EasySave.Services
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
                 CopyFileWithTiming(job, sourceFile, targetFile);
 
+                remainingSize -= fileSizes[idx];
                 processedFiles++;
                 state.Progress = (double)processedFiles / filesToCopy.Count * 100;
                 state.RemainingFiles = filesToCopy.Count - processedFiles;
-                state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                state.RemainingSize = remainingSize;
                 _realTimeStateService.UpdateState(state);
                 progress?.Report(state.Progress);
             }

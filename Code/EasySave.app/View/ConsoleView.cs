@@ -61,7 +61,7 @@ namespace EasySave.View
             PrintSeparator();
             Console.Write("> ");
 
-            string choice = Console.ReadLine();
+            string choice = Console.ReadLine() ?? "";
             if (choice == "2")
                 _language = "en";
             else
@@ -319,15 +319,15 @@ namespace EasySave.View
 
             // Nom du job
             Console.Write(Fr("  Nom du job: ", "  Job name: "));
-            string name = Console.ReadLine();
+            string name = Console.ReadLine() ?? "";
 
             // Répertoire source
             Console.Write(Fr("  Repertoire source: ", "  Source directory: "));
-            string sourceDir = Console.ReadLine();
+            string sourceDir = Console.ReadLine() ?? "";
 
             // Répertoire cible
             Console.Write(Fr("  Repertoire cible: ", "  Target directory: "));
-            string targetDir = Console.ReadLine();
+            string targetDir = Console.ReadLine() ?? "";
 
             // Type de sauvegarde
             Console.WriteLine(Fr("  Type de sauvegarde:", "  Backup type:"));
@@ -336,7 +336,7 @@ namespace EasySave.View
             Console.Write(Fr("  Choix (1-2): ", "  Choice (1-2): "));
 
             JobType type = JobType.Full;
-            string typeChoice = Console.ReadLine();
+            string typeChoice = Console.ReadLine() ?? "";
             if (typeChoice == "2")
                 type = JobType.Differential;
 
