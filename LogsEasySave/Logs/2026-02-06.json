@@ -1,0 +1,34 @@
+[
+  {
+    "Timestamp": "2026-02-06T08:52:55.0541065+01:00",
+    "JobName": "Test2",
+    "SourcePath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Source\\TEST.txt",
+    "TargetPath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Cible\\TEST.txt",
+    "FileSize": 0,
+    "TransferTime": 0
+  },
+  {
+    "Timestamp": "2026-02-06T08:52:55.0637493+01:00",
+    "JobName": "Test2",
+    "SourcePath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Source\\TEST2.txt",
+    "TargetPath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Cible\\TEST2.txt",
+    "FileSize": 5,
+    "TransferTime": 0
+  },
+  {
+    "Timestamp": "2026-02-06T08:52:55.0764421+01:00",
+    "JobName": "Test2",
+    "SourcePath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Source",
+    "TargetPath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Cible",
+    "FileSize": 5,
+    "TransferTime": 32
+  },
+  {
+    "Timestamp": "2026-02-06T08:52:55.1125923+01:00",
+    "JobName": "Test1",
+    "SourcePath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Source",
+    "TargetPath": "C:\\Users\\tilal\\Documents\\CESI\\TROISIEME ANNEE\\Module G\u00E9nie Logiciel\\EasySave\\RepertoireTESTS\\Cible",
+    "FileSize": 5,
+    "TransferTime": 10
+  }
+]
