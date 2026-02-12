@@ -7,31 +7,27 @@ using EasySave.Models;
 using EasySave.Services;
 using EasyLog.Services;
 
-namespace EasySave.App
+namespace EasySave.CLI
 {
+    // Note : Le point d'entrée principal est App.xaml.cs (WPF).
+    // Cette classe est conservée pour un éventuel mode console autonome.
     class Program
     {
+        // Le Main est désactivé car WPF génère son propre point d'entrée via App.xaml.
+        // Pour réactiver le mode console, changer OutputType en Exe et décommenter.
+        /*
         static void Main(string[] args)
         {
-            // Test des services (optionnel - commenter pour la production)
-            // TestServices.RunTests();
-            
-            // 1. Initialisation du ViewModel (Le cerveau)
             MainViewModel viewModel = new MainViewModel();
 
-            // 2. Gestion des arguments de ligne de commande (Exigence ProSoft)
-            // Exemple : EasySave.exe 1-3 ou 1;3
             if (args.Length > 0)
             {
                 ExecuteCommandLineArgs(args[0], viewModel);
-                return; // On quitte après l'exécution en ligne de commande
+                return;
             }
 
-            // 3. Initialisation de la Vue (L'interface de Nawfel)
-            // On lui donne le viewModel pour qu'elle puisse lui envoyer des ordres
             ConsoleView view = new ConsoleView(viewModel);
 
-            // 4. Boucle principale de l'application (Mode interactif)
             bool running = true;
             view.ShowMenu();
 
@@ -48,17 +44,17 @@ namespace EasySave.App
                     }
                     else
                     {
-                        // On laisse la vue traiter la commande (run, runall, help, etc.)
                         view.ProcessCommand(input);
                     }
                 }
             }
         }
+        */
 
         /// <summary>
         /// Analyse et exécute les commandes passées directement au .exe
         /// </summary>
-        private static void ExecuteCommandLineArgs(string arg, MainViewModel vm)
+        public static void ExecuteCommandLineArgs(string arg, MainViewModel vm)
         {
             try
             {
