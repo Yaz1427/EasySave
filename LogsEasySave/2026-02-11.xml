@@ -1,0 +1,822 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfLogEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.0567673+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.gitignore</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.gitignore</TargetPath>
+    <FileSize>592</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.2021607+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\conf.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\conf.py</TargetPath>
+    <FileSize>510</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.3084392+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\database.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\database.py</TargetPath>
+    <FileSize>3203</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.3899835+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\main.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\main.py</TargetPath>
+    <FileSize>4310</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.4816774+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\notes.txt</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\notes.txt</TargetPath>
+    <FileSize>1090</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.5801595+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\README.md</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\README.md</TargetPath>
+    <FileSize>9065</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.667774+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\requirements.txt</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\requirements.txt</TargetPath>
+    <FileSize>82</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.7642782+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\tables_dependances.sql</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\tables_dependances.sql</TargetPath>
+    <FileSize>9567</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.866607+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\config</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\config</TargetPath>
+    <FileSize>130</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:01.9633834+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\description</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\description</TargetPath>
+    <FileSize>73</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.061563+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\FETCH_HEAD</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\FETCH_HEAD</TargetPath>
+    <FileSize>125</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.1645565+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\HEAD</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\HEAD</TargetPath>
+    <FileSize>23</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.262267+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\index</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\index</TargetPath>
+    <FileSize>2372</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.354217+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\ORIG_HEAD</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\ORIG_HEAD</TargetPath>
+    <FileSize>41</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.4443904+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\logs\automates.log</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\logs\automates.log</TargetPath>
+    <FileSize>0</FileSize>
+    <TransferTime>0</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.536222+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\logs\automates_20260121_141321.log</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\logs\automates_20260121_141321.log</TargetPath>
+    <FileSize>0</FileSize>
+    <TransferTime>0</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.6283843+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\automates.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\automates.py</TargetPath>
+    <FileSize>11397</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.7260133+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\network.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\network.py</TargetPath>
+    <FileSize>1087</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.8176511+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\refresh.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\refresh.py</TargetPath>
+    <FileSize>4213</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.9107173+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\vm.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\vm.py</TargetPath>
+    <FileSize>5956</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:02.9997197+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\automate_service.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\automate_service.py</TargetPath>
+    <FileSize>20764</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.1034445+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\automate_service_distri.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\automate_service_distri.py</TargetPath>
+    <FileSize>1643</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.1908986+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\automate_service_hfsql.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\automate_service_hfsql.py</TargetPath>
+    <FileSize>3536</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.2824741+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\automate_service_postgresql.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\automate_service_postgresql.py</TargetPath>
+    <FileSize>10298</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.3698992+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\database.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\database.py</TargetPath>
+    <FileSize>3149</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.4626111+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\logger_service.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\logger_service.py</TargetPath>
+    <FileSize>3236</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.5642541+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\network_service.py</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\network_service.py</TargetPath>
+    <FileSize>4980</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.6608885+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\static\style.css</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\static\style.css</TargetPath>
+    <FileSize>351</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.7412428+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\templates\automates.html</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\templates\automates.html</TargetPath>
+    <FileSize>7815</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.8299444+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\templates\automate_ligne_tableau_refresh.html</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\templates\automate_ligne_tableau_refresh.html</TargetPath>
+    <FileSize>3029</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:03.9271669+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\templates\base.html</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\templates\base.html</TargetPath>
+    <FileSize>12356</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.0189321+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\templates\header_vm.html</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\templates\header_vm.html</TargetPath>
+    <FileSize>12387</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.113797+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\templates\modale_vm.html</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\templates\modale_vm.html</TargetPath>
+    <FileSize>14592</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.2017612+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\templates\network.html</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\templates\network.html</TargetPath>
+    <FileSize>16404</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.3011072+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\pyvenv.cfg</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\pyvenv.cfg</TargetPath>
+    <FileSize>75</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.3934124+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\automate_service.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\automate_service.cpython-39.pyc</TargetPath>
+    <FileSize>9651</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.4827686+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\automate_service_hfsql.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\automate_service_hfsql.cpython-39.pyc</TargetPath>
+    <FileSize>2771</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.5865135+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\automate_service_postgresql.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\automate_service_postgresql.cpython-39.pyc</TargetPath>
+    <FileSize>3267</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.681825+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\conf.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\conf.cpython-313.pyc</TargetPath>
+    <FileSize>635</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.7772566+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\conf.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\conf.cpython-39.pyc</TargetPath>
+    <FileSize>517</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.8622661+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\database.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\database.cpython-313.pyc</TargetPath>
+    <FileSize>5383</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:04.9439796+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\database.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\database.cpython-39.pyc</TargetPath>
+    <FileSize>3435</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.0302166+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\main.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\main.cpython-313.pyc</TargetPath>
+    <FileSize>2808</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.1254842+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\main.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\main.cpython-39.pyc</TargetPath>
+    <FileSize>1863</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.2270004+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\__pycache__\network_service.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\__pycache__\network_service.cpython-39.pyc</TargetPath>
+    <FileSize>4853</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.311036+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\applypatch-msg.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\applypatch-msg.sample</TargetPath>
+    <FileSize>478</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.3886167+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\commit-msg.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\commit-msg.sample</TargetPath>
+    <FileSize>896</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.4763768+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\fsmonitor-watchman.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\fsmonitor-watchman.sample</TargetPath>
+    <FileSize>4726</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.5819489+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\post-update.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\post-update.sample</TargetPath>
+    <FileSize>189</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.6808022+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\pre-applypatch.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\pre-applypatch.sample</TargetPath>
+    <FileSize>424</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.7658275+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\pre-commit.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\pre-commit.sample</TargetPath>
+    <FileSize>1649</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.8527338+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\pre-merge-commit.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\pre-merge-commit.sample</TargetPath>
+    <FileSize>416</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:05.9461624+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\pre-push.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\pre-push.sample</TargetPath>
+    <FileSize>1374</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.0377461+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\pre-rebase.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\pre-rebase.sample</TargetPath>
+    <FileSize>4898</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.1261171+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\pre-receive.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\pre-receive.sample</TargetPath>
+    <FileSize>544</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.2075673+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\prepare-commit-msg.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\prepare-commit-msg.sample</TargetPath>
+    <FileSize>1492</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.2868847+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\push-to-checkout.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\push-to-checkout.sample</TargetPath>
+    <FileSize>2783</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.3753825+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\sendemail-validate.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\sendemail-validate.sample</TargetPath>
+    <FileSize>2308</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.4632564+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\hooks\update.sample</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\hooks\update.sample</TargetPath>
+    <FileSize>3650</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.5415449+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\info\exclude</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\info\exclude</TargetPath>
+    <FileSize>240</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.6255277+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\logs\HEAD</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\logs\HEAD</TargetPath>
+    <FileSize>661</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.7100282+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\automates.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\automates.cpython-313.pyc</TargetPath>
+    <FileSize>11877</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.7985107+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\automates.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\automates.cpython-39.pyc</TargetPath>
+    <FileSize>3485</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.8870983+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\network.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\network.cpython-313.pyc</TargetPath>
+    <FileSize>1762</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:06.9786836+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\network.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\network.cpython-39.pyc</TargetPath>
+    <FileSize>1402</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.0570567+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\refresh.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\refresh.cpython-313.pyc</TargetPath>
+    <FileSize>4361</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.1327547+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\refresh.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\refresh.cpython-39.pyc</TargetPath>
+    <FileSize>2544</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.2085096+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\vm.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\vm.cpython-313.pyc</TargetPath>
+    <FileSize>6032</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.293817+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\routers\__pycache__\vm.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\routers\__pycache__\vm.cpython-39.pyc</TargetPath>
+    <FileSize>3936</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.3809321+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service.cpython-313.pyc</TargetPath>
+    <FileSize>19608</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.465998+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service.cpython-39.pyc</TargetPath>
+    <FileSize>13645</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.5465257+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service_distri.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service_distri.cpython-313.pyc</TargetPath>
+    <FileSize>2306</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.6349614+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service_distri.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service_distri.cpython-39.pyc</TargetPath>
+    <FileSize>1691</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.7281455+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service_hfsql.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service_hfsql.cpython-313.pyc</TargetPath>
+    <FileSize>3830</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.8248354+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service_hfsql.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service_hfsql.cpython-39.pyc</TargetPath>
+    <FileSize>2789</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:07.9277933+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service_postgresql.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service_postgresql.cpython-313.pyc</TargetPath>
+    <FileSize>9475</FileSize>
+    <TransferTime>1</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.0237454+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\automate_service_postgresql.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\automate_service_postgresql.cpython-39.pyc</TargetPath>
+    <FileSize>6091</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.1135503+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\logger_service.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\logger_service.cpython-313.pyc</TargetPath>
+    <FileSize>4293</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.1951263+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\network_service.cpython-313.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\network_service.cpython-313.pyc</TargetPath>
+    <FileSize>5565</FileSize>
+    <TransferTime>2</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.2798277+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\services\__pycache__\network_service.cpython-39.pyc</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\services\__pycache__\network_service.cpython-39.pyc</TargetPath>
+    <FileSize>4862</FileSize>
+    <TransferTime>4</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.3716935+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\activate</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\activate</TargetPath>
+    <FileSize>1976</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.4626766+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\activate.bat</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\activate.bat</TargetPath>
+    <FileSize>968</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.5542755+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\Activate.ps1</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\Activate.ps1</TargetPath>
+    <FileSize>19412</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.6444129+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\deactivate.bat</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\deactivate.bat</TargetPath>
+    <FileSize>368</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.7399221+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\pip.exe</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\pip.exe</TargetPath>
+    <FileSize>106361</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.8450522+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\pip3.9.exe</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\pip3.9.exe</TargetPath>
+    <FileSize>106361</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:08.9447786+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\pip3.exe</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\pip3.exe</TargetPath>
+    <FileSize>106361</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:09.0449623+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\python.exe</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\python.exe</TargetPath>
+    <FileSize>543464</FileSize>
+    <TransferTime>5</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:09.1424763+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\pythonw.exe</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\pythonw.exe</TargetPath>
+    <FileSize>542440</FileSize>
+    <TransferTime>5</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:09.2553754+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\venv\Scripts\uvicorn.exe</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\venv\Scripts\uvicorn.exe</TargetPath>
+    <FileSize>106351</FileSize>
+    <TransferTime>3</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+  <LogEntry>
+    <Timestamp>2026-02-11T11:23:09.3602956+01:00</Timestamp>
+    <JobName>test</JobName>
+    <SourcePath>C:\Users\tilal\Documents\Worldgrid\AutoScope_refonte_py\AutoScope_refonte_py\.git\objects\07\e2370e7c229f03ea92631ab9d79355f200c8ba</SourcePath>
+    <TargetPath>C:\Users\tilal\Documents\CESI\TROISIEME ANNEE\Module Génie Logiciel\Tests EasySave\Cible\AutoScope_refonte_py\.git\objects\07\e2370e7c229f03ea92631ab9d79355f200c8ba</TargetPath>
+    <FileSize>1103</FileSize>
+    <TransferTime>-6</TransferTime>
+    <EncryptionTime>0</EncryptionTime>
+  </LogEntry>
+</ArrayOfLogEntry>

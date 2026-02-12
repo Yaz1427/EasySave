@@ -1,9 +1,9 @@
 {
-  "JobName": "Test1",
-  "LastActionTimestamp": "2026-02-06T08:52:55.1024906+01:00",
+  "JobName": "yest",
+  "LastActionTimestamp": "2026-02-12T16:43:25.2959113+01:00",
   "Status": "End",
-  "TotalFilesToCopy": 2,
-  "TotalFilesSize": 5,
+  "TotalFilesToCopy": 147,
+  "TotalFilesSize": 7897074,
   "Progress": 100,
   "RemainingFiles": 0,
   "RemainingSize": 0,
