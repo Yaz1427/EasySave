@@ -16,10 +16,17 @@ namespace EasySave.Services
         private readonly RealTimeStateService _realTimeStateService;
         private readonly CryptoSoftService _cryptoSoftService;
         private readonly BusinessSoftwareService _businessSoftwareService;
+
         private List<string> _encryptExtensions;
+        private AppSettings _settings;
+
+        // v3: global gate to prevent transferring 2 large files at the same time (across all jobs)
+        private static readonly SemaphoreSlim _largeFileTransferGate = new SemaphoreSlim(1, 1);
 
         public BackupService(AppSettings settings)
         {
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+
             string baseDir = Path.GetFullPath(Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 "..", "..", "..", "..", ".."));
@@ -27,14 +34,20 @@ namespace EasySave.Services
 
             _logger = new LoggerService(logsDir, settings.GetLogFormat());
             _realTimeStateService = new RealTimeStateService();
+
             _cryptoSoftService = new CryptoSoftService();
             _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
+
             _businessSoftwareService = new BusinessSoftwareService(settings.BusinessSoftwareProcess);
+
             _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
         }
 
         public void UpdateSettings(AppSettings settings)
         {
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+
+            _settings = settings;
             _logger.Format = settings.GetLogFormat();
             _businessSoftwareService.ProcessName = settings.BusinessSoftwareProcess;
             _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
@@ -55,7 +68,7 @@ namespace EasySave.Services
             if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir is empty.");
             if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir is empty.");
 
-            // v2.0: Block if business software is running
+            // v2.0: Block if business software is running (start prevention)
             if (_businessSoftwareService.IsRunning())
                 throw new InvalidOperationException("Business software is running. Backup blocked.");
 
@@ -208,9 +221,26 @@ namespace EasySave.Services
             var sw = Stopwatch.StartNew();
             long fileSize = new FileInfo(sourceFile).Length;
 
+            // v3: determine if file is "large" (> n Ko)
+            bool isLargeFile = (fileSize / 1024) > _settings.LargeFileThresholdKB;
+
             try
             {
-                File.Copy(sourceFile, targetFile, overwrite: true);
+                // v3: If the file is large, prevent parallel transfers of another large file.
+                if (isLargeFile)
+                    _largeFileTransferGate.Wait();
+
+                try
+                {
+                    // TRANSFER (bandwidth rule applies here)
+                    File.Copy(sourceFile, targetFile, overwrite: true);
+                }
+                finally
+                {
+                    if (isLargeFile)
+                        _largeFileTransferGate.Release();
+                }
+
                 sw.Stop();
 
                 // v2.0: Encrypt if needed

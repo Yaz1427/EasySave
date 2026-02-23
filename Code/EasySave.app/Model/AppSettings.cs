@@ -21,6 +21,10 @@ namespace EasySave.Models
         // Encryption mode: "AES" or "XOR"
         public string EncryptionMode { get; set; } = "AES";
 
+        // v3: threshold (in KB) above which big files cannot be transferred in parallel
+        // Interdiction de transférer en parallèle des fichiers de plus de n Ko (n Ko paramétrable)
+        public int LargeFileThresholdKB { get; set; } = 1024; // 1MB by default
+
         public LogFormat GetLogFormat()
         {
             return LogFormat.Equals("XML", StringComparison.OrdinalIgnoreCase)
@@ -29,3 +33,4 @@ namespace EasySave.Models
         }
     }
 }
+
