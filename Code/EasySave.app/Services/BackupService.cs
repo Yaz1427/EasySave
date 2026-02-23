@@ -17,6 +17,13 @@ namespace EasySave.Services
         private readonly CryptoSoftService _cryptoSoftService;
         private readonly BusinessSoftwareService _businessSoftwareService;
         private List<string> _encryptExtensions;
+        // v3.0 - Gestion globale des fichiers prioritaires (entre tous les jobs parallèles)
+        private static int _globalPriorityRemaining = 0;
+        private static readonly ManualResetEventSlim _noPriorityPendingEvent = new(true);
+
+        // v3.0 - Extensions prioritaires (paramètres généraux)
+        private List<string> _priorityExtensions;
+
 
         public BackupService(AppSettings settings)
         {
@@ -31,6 +38,8 @@ namespace EasySave.Services
             _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
             _businessSoftwareService = new BusinessSoftwareService(settings.BusinessSoftwareProcess);
             _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
+            _priorityExtensions = settings.PriorityExtensions ?? new List<string>();
+
         }
 
         public void UpdateSettings(AppSettings settings)
@@ -39,6 +48,8 @@ namespace EasySave.Services
             _businessSoftwareService.ProcessName = settings.BusinessSoftwareProcess;
             _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
             _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
+            _priorityExtensions = settings.PriorityExtensions ?? new List<string>();
+
         }
 
         /// <summary>
@@ -122,11 +133,74 @@ namespace EasySave.Services
             var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
             int processedFiles = 0;
 
-            foreach (var sourceFile in allFiles)
+            // v3.0 - Séparer les fichiers prioritaires et non prioritaires
+            var priorityFiles = allFiles.Where(IsPriorityFile).ToList();
+            var nonPriorityFiles = allFiles.Where(f => !IsPriorityFile(f)).ToList();
+
+            // v3.0 - On annonce globalement qu'il y a des prioritaires à traiter
+            int added = priorityFiles.Count;
+            if (added > 0)
+            {
+                Interlocked.Add(ref _globalPriorityRemaining, added);
+                _noPriorityPendingEvent.Reset(); // => bloque les non prioritaires dans TOUS les jobs
+            }
+
+            // 1) D'abord : traiter les fichiers prioritaires
+            int priorityProcessed = 0;
+            try
+            {
+                foreach (var sourceFile in priorityFiles)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (_businessSoftwareService.IsRunning())
+                        throw new BusinessSoftwareRunningException();
+
+                    var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+                    var targetFile = Path.Combine(actualTargetDir, relativePath);
+
+                    state.CurrentSourceFile = sourceFile;
+                    state.CurrentTargetFile = targetFile;
+                    state.LastActionTimestamp = DateTime.Now;
+                    _realTimeStateService.UpdateState(state);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
+                    CopyFileWithTiming(job, sourceFile, targetFile);
+
+                    priorityProcessed++;
+
+                    // v3.0 - Un prioritaire terminé => décrément global
+                    if (Interlocked.Decrement(ref _globalPriorityRemaining) == 0)
+                        _noPriorityPendingEvent.Set(); // => autorise les non prioritaires dans TOUS les jobs
+
+                    processedFiles++;
+                    state.Progress = (double)processedFiles / allFiles.Count * 100;
+                    state.RemainingFiles = allFiles.Count - processedFiles;
+                    state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                    _realTimeStateService.UpdateState(state);
+                    progress?.Report(state.Progress);
+                }
+            }
+            finally
+            {
+                // Si on sort en erreur, on retire du compteur global les prioritaires non traités
+                int remaining = priorityFiles.Count - priorityProcessed;
+                if (remaining > 0)
+                {
+                    if (Interlocked.Add(ref _globalPriorityRemaining, -remaining) == 0)
+                        _noPriorityPendingEvent.Set();
+                }
+            }
+
+
+            // 2) Ensuite : traiter les fichiers non prioritaires
+            foreach (var sourceFile in nonPriorityFiles)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // v2.0: Check business software between files
+                // v3.0 - Tant qu'il reste au moins 1 prioritaire dans n'importe quel job => on attend
+                _noPriorityPendingEvent.Wait(cancellationToken);
+
                 if (_businessSoftwareService.IsRunning())
                     throw new BusinessSoftwareRunningException();
 
@@ -148,6 +222,7 @@ namespace EasySave.Services
                 _realTimeStateService.UpdateState(state);
                 progress?.Report(state.Progress);
             }
+
         }
 
         private void CopyDirectoryDifferential(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
@@ -175,11 +250,70 @@ namespace EasySave.Services
 
             int processedFiles = 0;
 
-            foreach (var sourceFile in filesToCopy)
+            // v3.0 - Séparer prioritaires / non prioritaires
+            var priorityFiles = filesToCopy.Where(IsPriorityFile).ToList();
+            var nonPriorityFiles = filesToCopy.Where(f => !IsPriorityFile(f)).ToList();
+
+            // v3.0 - On annonce globalement qu'il y a des prioritaires à traiter
+            int added = priorityFiles.Count;
+            if (added > 0)
+            {
+                Interlocked.Add(ref _globalPriorityRemaining, added);
+                _noPriorityPendingEvent.Reset();
+            }
+
+            // 1) D'abord : prioritaires
+            int priorityProcessed = 0;
+            try
+            {
+                foreach (var sourceFile in priorityFiles)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (_businessSoftwareService.IsRunning())
+                        throw new BusinessSoftwareRunningException();
+
+                    var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+                    var targetFile = Path.Combine(actualTargetDir, relativePath);
+
+                    state.CurrentSourceFile = sourceFile;
+                    state.CurrentTargetFile = targetFile;
+                    state.LastActionTimestamp = DateTime.Now;
+                    _realTimeStateService.UpdateState(state);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
+                    CopyFileWithTiming(job, sourceFile, targetFile);
+
+                    priorityProcessed++;
+
+                    if (Interlocked.Decrement(ref _globalPriorityRemaining) == 0)
+                        _noPriorityPendingEvent.Set();
+
+                    processedFiles++;
+                    state.Progress = (double)processedFiles / filesToCopy.Count * 100;
+                    state.RemainingFiles = filesToCopy.Count - processedFiles;
+                    state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                    _realTimeStateService.UpdateState(state);
+                    progress?.Report(state.Progress);
+                }
+            }
+            finally
+            {
+                int remaining = priorityFiles.Count - priorityProcessed;
+                if (remaining > 0)
+                {
+                    if (Interlocked.Add(ref _globalPriorityRemaining, -remaining) == 0)
+                        _noPriorityPendingEvent.Set();
+                }
+            }
+
+            // 2) Ensuite : non prioritaires (attendre la fin globale des prioritaires)
+            foreach (var sourceFile in nonPriorityFiles)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // v2.0: Check business software between files
+                _noPriorityPendingEvent.Wait(cancellationToken);
+
                 if (_businessSoftwareService.IsRunning())
                     throw new BusinessSoftwareRunningException();
 
@@ -201,6 +335,7 @@ namespace EasySave.Services
                 _realTimeStateService.UpdateState(state);
                 progress?.Report(state.Progress);
             }
+
         }
 
         private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile)
@@ -254,6 +389,21 @@ namespace EasySave.Services
                 _logger.SaveLog(entry);
                 throw;
             }
+        }
+
+        // v3.0 - Normalise les extensions (".pdf" / "pdf" -> ".pdf")
+        private static string NormalizeExt(string ext)
+        {
+            if (string.IsNullOrWhiteSpace(ext)) return "";
+            ext = ext.Trim();
+            return ext.StartsWith(".") ? ext.ToLowerInvariant() : "." + ext.ToLowerInvariant();
+        }
+
+        // v3.0 - Détermine si un fichier est prioritaire selon son extension
+        private bool IsPriorityFile(string filePath)
+        {
+            string ext = NormalizeExt(Path.GetExtension(filePath));
+            return _priorityExtensions.Any(e => NormalizeExt(e) == ext);
         }
     }
 
