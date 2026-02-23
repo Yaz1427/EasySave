@@ -1,22 +1,18 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using EasySave.Models;
 using EasyLog.Services;
 using EasyLog.Models;
+using System.IO;
+using System.Linq;
 
 namespace EasySave.Services
 {
     public class BackupService
     {
+        // Dépendances
         private readonly LoggerService _logger;
         private readonly RealTimeStateService _realTimeStateService;
-        private readonly CryptoSoftService _cryptoSoftService;
-        private readonly BusinessSoftwareService _businessSoftwareService;
-        private List<string> _encryptExtensions;
+
         // v3.0 - Gestion globale des fichiers prioritaires (entre tous les jobs parallèles)
         private static int _globalPriorityRemaining = 0;
         private static readonly ManualResetEventSlim _noPriorityPendingEvent = new(true);
@@ -24,60 +20,50 @@ namespace EasySave.Services
         // v3.0 - Extensions prioritaires (paramètres généraux)
         private List<string> _priorityExtensions;
 
-
-        public BackupService(AppSettings settings)
+        // Constructeur
+        public BackupService(LogFormat logFormat = LogFormat.JSON, List<string>? priorityExtensions = null)
         {
-            string baseDir = Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..", ".."));
-            string logsDir = Path.Combine(baseDir, "LogsEasySave");
-
-            _logger = new LoggerService(logsDir, settings.GetLogFormat());
+            string logsDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "EasySave", "Logs");
+            _logger = new LoggerService(logsDir, logFormat);
             _realTimeStateService = new RealTimeStateService();
-            _cryptoSoftService = new CryptoSoftService();
-            _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
-            _businessSoftwareService = new BusinessSoftwareService(settings.BusinessSoftwareProcess);
-            _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
-            _priorityExtensions = settings.PriorityExtensions ?? new List<string>();
-
+            _priorityExtensions = priorityExtensions ?? new List<string>();
         }
 
-        public void UpdateSettings(AppSettings settings)
+        public void SetLogFormat(LogFormat format)
         {
-            _logger.Format = settings.GetLogFormat();
-            _businessSoftwareService.ProcessName = settings.BusinessSoftwareProcess;
-            _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
-            _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
-            _priorityExtensions = settings.PriorityExtensions ?? new List<string>();
-
+            _logger.SetLogFormat(format);
         }
 
-        /// <summary>
-        /// Checks if the business software is currently running.
-        /// </summary>
-        public bool IsBusinessSoftwareRunning()
+        public LogFormat GetLogFormat()
         {
-            return _businessSoftwareService.IsRunning();
+            return _logger.GetLogFormat();
         }
 
-        public void ExecuteBackup(BackupJob job, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
+        public void SetPriorityExtensions(List<string> extensions)
+        {
+            _priorityExtensions = extensions ?? new List<string>();
+        }
+
+        // Méthode principale : exécutera une sauvegarde
+        public void ExecuteBackup(BackupJob job)
         {
             if (job == null) throw new ArgumentNullException(nameof(job));
-            if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir is empty.");
-            if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir is empty.");
+            if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir vide");
+            if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir null");
 
-            // v2.0: Block if business software is running
-            if (_businessSoftwareService.IsRunning())
-                throw new InvalidOperationException("Business software is running. Backup blocked.");
-
+            // Vérifications répertoires
             if (!Directory.Exists(job.SourceDir))
-                throw new DirectoryNotFoundException($"Source not found: {job.SourceDir}");
+                throw new DirectoryNotFoundException($"Source introuvable : {job.SourceDir}");
 
             Directory.CreateDirectory(job.TargetDir);
 
+            // Initialiser l'état temps réel
             var state = _realTimeStateService.CreateInitialState(job);
             _realTimeStateService.UpdateState(state);
 
+            // Calculer les informations initiales
             var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
             state.TotalFilesToCopy = allFiles.Count;
             state.TotalFilesSize = allFiles.Sum(f => new FileInfo(f).Length);
@@ -85,15 +71,26 @@ namespace EasySave.Services
             state.RemainingSize = state.TotalFilesSize;
             _realTimeStateService.UpdateState(state);
 
+            // Mesure temps
+            var sw = Stopwatch.StartNew();
+
             try
             {
+                // Copie selon type
                 if (job.Type == JobType.Full)
-                    CopyDirectoryFull(job, state, progress, cancellationToken);
+                {
+                    CopyDirectoryFull(job, state);
+                }
                 else if (job.Type == JobType.Differential)
-                    CopyDirectoryDifferential(job, state, progress, cancellationToken);
+                {
+                    CopyDirectoryDifferential(job, state);
+                }
                 else
-                    throw new NotSupportedException($"Unsupported job type: {job.Type}");
+                {
+                    throw new NotSupportedException($"Type de job non supporté : {job.Type}");
+                }
 
+                // Marquer comme terminé
                 state.Status = "End";
                 state.Progress = 100;
                 state.RemainingFiles = 0;
@@ -103,61 +100,69 @@ namespace EasySave.Services
                 state.LastActionTimestamp = DateTime.Now;
                 _realTimeStateService.UpdateState(state);
             }
-            catch (BusinessSoftwareRunningException)
+            finally
             {
-                state.Status = "Stopped - Business software detected";
-                state.LastActionTimestamp = DateTime.Now;
-                _realTimeStateService.UpdateState(state);
+                sw.Stop();
 
-                var stopEntry = new LogEntry
+                var entry = new LogEntry
                 {
                     Timestamp = DateTime.Now,
                     JobName = job.Name,
-                    SourcePath = state.CurrentSourceFile,
-                    TargetPath = state.CurrentTargetFile,
-                    FileSize = 0,
-                    TransferTime = -1,
-                    EncryptionTime = 0
+                    SourcePath = job.SourceDir,
+                    TargetPath = job.TargetDir,
+                    FileSize = GetDirectorySize(job.TargetDir),
+                    TransferTime = (int)sw.ElapsedMilliseconds
                 };
-                _logger.SaveLog(stopEntry);
-                throw;
+
+                _logger.SaveLog(entry);
             }
         }
 
-        private void CopyDirectoryFull(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
+        // Règle de sauvegarde différentielle
+        public bool CheckDifferential(string file)
         {
-            string sourceFolderName = new DirectoryInfo(job.SourceDir).Name;
-            string actualTargetDir = Path.Combine(job.TargetDir, sourceFolderName);
-            Directory.CreateDirectory(actualTargetDir);
+            if (string.IsNullOrWhiteSpace(file)) return false;
+            if (!File.Exists(file)) return false;
+            return true;
+        }
 
+        // Helpers privés
+
+        private void CopyDirectoryFull(BackupJob job, RealTimeState state)
+        {
             var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+            // Pre-compute file sizes to avoid O(n²) disk reads
+            var fileSizes = allFiles.Select(f => new FileInfo(f).Length).ToList();
+            long remainingSize = fileSizes.Sum();
             int processedFiles = 0;
 
             // v3.0 - Séparer les fichiers prioritaires et non prioritaires
-            var priorityFiles = allFiles.Where(IsPriorityFile).ToList();
-            var nonPriorityFiles = allFiles.Where(f => !IsPriorityFile(f)).ToList();
+            var priorityIndices = new List<int>();
+            var nonPriorityIndices = new List<int>();
+            for (int i = 0; i < allFiles.Count; i++)
+            {
+                if (IsPriorityFile(allFiles[i]))
+                    priorityIndices.Add(i);
+                else
+                    nonPriorityIndices.Add(i);
+            }
 
             // v3.0 - On annonce globalement qu'il y a des prioritaires à traiter
-            int added = priorityFiles.Count;
-            if (added > 0)
+            if (priorityIndices.Count > 0)
             {
-                Interlocked.Add(ref _globalPriorityRemaining, added);
-                _noPriorityPendingEvent.Reset(); // => bloque les non prioritaires dans TOUS les jobs
+                Interlocked.Add(ref _globalPriorityRemaining, priorityIndices.Count);
+                _noPriorityPendingEvent.Reset();
             }
 
             // 1) D'abord : traiter les fichiers prioritaires
             int priorityProcessed = 0;
             try
             {
-                foreach (var sourceFile in priorityFiles)
+                foreach (int idx in priorityIndices)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (_businessSoftwareService.IsRunning())
-                        throw new BusinessSoftwareRunningException();
-
+                    var sourceFile = allFiles[idx];
                     var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                    var targetFile = Path.Combine(actualTargetDir, relativePath);
+                    var targetFile = Path.Combine(job.TargetDir, relativePath);
 
                     state.CurrentSourceFile = sourceFile;
                     state.CurrentTargetFile = targetFile;
@@ -165,26 +170,25 @@ namespace EasySave.Services
                     _realTimeStateService.UpdateState(state);
 
                     Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-                    CopyFileWithTiming(job, sourceFile, targetFile);
+                    CopyFileWithTiming(job, sourceFile, targetFile, state);
 
                     priorityProcessed++;
 
                     // v3.0 - Un prioritaire terminé => décrément global
                     if (Interlocked.Decrement(ref _globalPriorityRemaining) == 0)
-                        _noPriorityPendingEvent.Set(); // => autorise les non prioritaires dans TOUS les jobs
+                        _noPriorityPendingEvent.Set();
 
+                    remainingSize -= fileSizes[idx];
                     processedFiles++;
                     state.Progress = (double)processedFiles / allFiles.Count * 100;
                     state.RemainingFiles = allFiles.Count - processedFiles;
-                    state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                    state.RemainingSize = remainingSize;
                     _realTimeStateService.UpdateState(state);
-                    progress?.Report(state.Progress);
                 }
             }
             finally
             {
-                // Si on sort en erreur, on retire du compteur global les prioritaires non traités
-                int remaining = priorityFiles.Count - priorityProcessed;
+                int remaining = priorityIndices.Count - priorityProcessed;
                 if (remaining > 0)
                 {
                     if (Interlocked.Add(ref _globalPriorityRemaining, -remaining) == 0)
@@ -192,20 +196,15 @@ namespace EasySave.Services
                 }
             }
 
-
             // 2) Ensuite : traiter les fichiers non prioritaires
-            foreach (var sourceFile in nonPriorityFiles)
+            foreach (int idx in nonPriorityIndices)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
                 // v3.0 - Tant qu'il reste au moins 1 prioritaire dans n'importe quel job => on attend
-                _noPriorityPendingEvent.Wait(cancellationToken);
+                _noPriorityPendingEvent.Wait();
 
-                if (_businessSoftwareService.IsRunning())
-                    throw new BusinessSoftwareRunningException();
-
+                var sourceFile = allFiles[idx];
                 var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                var targetFile = Path.Combine(actualTargetDir, relativePath);
+                var targetFile = Path.Combine(job.TargetDir, relativePath);
 
                 state.CurrentSourceFile = sourceFile;
                 state.CurrentTargetFile = targetFile;
@@ -213,31 +212,27 @@ namespace EasySave.Services
                 _realTimeStateService.UpdateState(state);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-                CopyFileWithTiming(job, sourceFile, targetFile);
+                CopyFileWithTiming(job, sourceFile, targetFile, state);
 
+                remainingSize -= fileSizes[idx];
                 processedFiles++;
                 state.Progress = (double)processedFiles / allFiles.Count * 100;
                 state.RemainingFiles = allFiles.Count - processedFiles;
-                state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                state.RemainingSize = remainingSize;
                 _realTimeStateService.UpdateState(state);
-                progress?.Report(state.Progress);
             }
-
         }
 
-        private void CopyDirectoryDifferential(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
+        private void CopyDirectoryDifferential(BackupJob job, RealTimeState state)
         {
-            string sourceFolderName = new DirectoryInfo(job.SourceDir).Name;
-            string actualTargetDir = Path.Combine(job.TargetDir, sourceFolderName);
-            Directory.CreateDirectory(actualTargetDir);
-
             var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
             var filesToCopy = new List<string>();
 
+            // Déterminer les fichiers à copier
             foreach (var sourceFile in allFiles)
             {
                 var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                var targetFile = Path.Combine(actualTargetDir, relativePath);
+                var targetFile = Path.Combine(job.TargetDir, relativePath);
 
                 bool shouldCopy =
                     !File.Exists(targetFile) ||
@@ -248,17 +243,26 @@ namespace EasySave.Services
                     filesToCopy.Add(sourceFile);
             }
 
+            // Pre-compute file sizes
+            var fileSizes = filesToCopy.Select(f => new FileInfo(f).Length).ToList();
+            long remainingSize = fileSizes.Sum();
             int processedFiles = 0;
 
             // v3.0 - Séparer prioritaires / non prioritaires
-            var priorityFiles = filesToCopy.Where(IsPriorityFile).ToList();
-            var nonPriorityFiles = filesToCopy.Where(f => !IsPriorityFile(f)).ToList();
+            var priorityIndices = new List<int>();
+            var nonPriorityIndices = new List<int>();
+            for (int i = 0; i < filesToCopy.Count; i++)
+            {
+                if (IsPriorityFile(filesToCopy[i]))
+                    priorityIndices.Add(i);
+                else
+                    nonPriorityIndices.Add(i);
+            }
 
             // v3.0 - On annonce globalement qu'il y a des prioritaires à traiter
-            int added = priorityFiles.Count;
-            if (added > 0)
+            if (priorityIndices.Count > 0)
             {
-                Interlocked.Add(ref _globalPriorityRemaining, added);
+                Interlocked.Add(ref _globalPriorityRemaining, priorityIndices.Count);
                 _noPriorityPendingEvent.Reset();
             }
 
@@ -266,15 +270,11 @@ namespace EasySave.Services
             int priorityProcessed = 0;
             try
             {
-                foreach (var sourceFile in priorityFiles)
+                foreach (int idx in priorityIndices)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (_businessSoftwareService.IsRunning())
-                        throw new BusinessSoftwareRunningException();
-
+                    var sourceFile = filesToCopy[idx];
                     var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                    var targetFile = Path.Combine(actualTargetDir, relativePath);
+                    var targetFile = Path.Combine(job.TargetDir, relativePath);
 
                     state.CurrentSourceFile = sourceFile;
                     state.CurrentTargetFile = targetFile;
@@ -282,24 +282,24 @@ namespace EasySave.Services
                     _realTimeStateService.UpdateState(state);
 
                     Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-                    CopyFileWithTiming(job, sourceFile, targetFile);
+                    CopyFileWithTiming(job, sourceFile, targetFile, state);
 
                     priorityProcessed++;
 
                     if (Interlocked.Decrement(ref _globalPriorityRemaining) == 0)
                         _noPriorityPendingEvent.Set();
 
+                    remainingSize -= fileSizes[idx];
                     processedFiles++;
                     state.Progress = (double)processedFiles / filesToCopy.Count * 100;
                     state.RemainingFiles = filesToCopy.Count - processedFiles;
-                    state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                    state.RemainingSize = remainingSize;
                     _realTimeStateService.UpdateState(state);
-                    progress?.Report(state.Progress);
                 }
             }
             finally
             {
-                int remaining = priorityFiles.Count - priorityProcessed;
+                int remaining = priorityIndices.Count - priorityProcessed;
                 if (remaining > 0)
                 {
                     if (Interlocked.Add(ref _globalPriorityRemaining, -remaining) == 0)
@@ -308,17 +308,13 @@ namespace EasySave.Services
             }
 
             // 2) Ensuite : non prioritaires (attendre la fin globale des prioritaires)
-            foreach (var sourceFile in nonPriorityFiles)
+            foreach (int idx in nonPriorityIndices)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _noPriorityPendingEvent.Wait();
 
-                _noPriorityPendingEvent.Wait(cancellationToken);
-
-                if (_businessSoftwareService.IsRunning())
-                    throw new BusinessSoftwareRunningException();
-
+                var sourceFile = filesToCopy[idx];
                 var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                var targetFile = Path.Combine(actualTargetDir, relativePath);
+                var targetFile = Path.Combine(job.TargetDir, relativePath);
 
                 state.CurrentSourceFile = sourceFile;
                 state.CurrentTargetFile = targetFile;
@@ -326,19 +322,18 @@ namespace EasySave.Services
                 _realTimeStateService.UpdateState(state);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-                CopyFileWithTiming(job, sourceFile, targetFile);
+                CopyFileWithTiming(job, sourceFile, targetFile, state);
 
+                remainingSize -= fileSizes[idx];
                 processedFiles++;
                 state.Progress = (double)processedFiles / filesToCopy.Count * 100;
                 state.RemainingFiles = filesToCopy.Count - processedFiles;
-                state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+                state.RemainingSize = remainingSize;
                 _realTimeStateService.UpdateState(state);
-                progress?.Report(state.Progress);
             }
-
         }
 
-        private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile)
+        private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile, RealTimeState state)
         {
             var sw = Stopwatch.StartNew();
             long fileSize = new FileInfo(sourceFile).Length;
@@ -348,16 +343,6 @@ namespace EasySave.Services
                 File.Copy(sourceFile, targetFile, overwrite: true);
                 sw.Stop();
 
-                // v2.0: Encrypt if needed
-                int encryptionTime = 0;
-                string ext = Path.GetExtension(sourceFile);
-                if (_encryptExtensions.Any(e =>
-                    e.Equals(ext, StringComparison.OrdinalIgnoreCase) ||
-                    ("." + e.TrimStart('.')).Equals(ext, StringComparison.OrdinalIgnoreCase)))
-                {
-                    encryptionTime = _cryptoSoftService.EncryptFile(targetFile);
-                }
-
                 var entry = new LogEntry
                 {
                     Timestamp = DateTime.Now,
@@ -365,8 +350,7 @@ namespace EasySave.Services
                     SourcePath = sourceFile,
                     TargetPath = targetFile,
                     FileSize = fileSize,
-                    TransferTime = (int)sw.ElapsedMilliseconds,
-                    EncryptionTime = encryptionTime
+                    TransferTime = (int)sw.ElapsedMilliseconds
                 };
 
                 _logger.SaveLog(entry);
@@ -382,8 +366,7 @@ namespace EasySave.Services
                     SourcePath = sourceFile,
                     TargetPath = targetFile,
                     FileSize = fileSize,
-                    TransferTime = -(int)sw.ElapsedMilliseconds,
-                    EncryptionTime = 0
+                    TransferTime = -(int)sw.ElapsedMilliseconds
                 };
 
                 _logger.SaveLog(entry);
@@ -405,13 +388,13 @@ namespace EasySave.Services
             string ext = NormalizeExt(Path.GetExtension(filePath));
             return _priorityExtensions.Any(e => NormalizeExt(e) == ext);
         }
-    }
 
-    public class BusinessSoftwareRunningException : Exception
-    {
-        public BusinessSoftwareRunningException()
-            : base("Business software detected. Backup stopped after current file.")
+        private long GetDirectorySize(string dir)
         {
+            long size = 0;
+            foreach (var f in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+                size += new FileInfo(f).Length;
+            return size;
         }
     }
 }
