@@ -78,7 +78,12 @@ namespace EasySave.ViewModel
             CancelEditCommand = new RelayCommand(_ => CancelEditJob(), _ => IsEditing);
             RefreshLogsCommand = new RelayCommand(_ => LoadLogFiles());
             OpenLogsFolderCommand = new RelayCommand(_ => OpenLogsFolder());
+            // existing stop command (global stop/cancel)
             StopBackupCommand = new RelayCommand(_ => StopBackup(), _ => IsRunning);
+
+            // Play / Pause commands (fix : were missing)
+            PlayBackupCommand = new RelayCommand(_ => PlaySelected(), _ => SelectedJob != null && IsRunning);
+            PauseBackupCommand = new RelayCommand(_ => PauseSelected(), _ => SelectedJob != null && IsRunning);
 
             LoadLogFiles();
         }
@@ -94,7 +99,17 @@ namespace EasySave.ViewModel
         public BackupJob? SelectedJob
         {
             get => _selectedJob;
-            set => SetProperty(ref _selectedJob, value);
+            set
+            {
+                if (SetProperty(ref _selectedJob, value))
+                {
+                    // Ask WPF to re-evaluate command can-execute
+                    (PlayBackupCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (PauseBackupCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (DeleteJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (EditJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
         }
 
         public string StatusMessage
@@ -106,7 +121,20 @@ namespace EasySave.ViewModel
         public bool IsRunning
         {
             get => _isRunning;
-            set => SetProperty(ref _isRunning, value);
+            set
+            {
+                if (SetProperty(ref _isRunning, value))
+                {
+                    // Update commands that depend on IsRunning
+                    (StopBackupCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (PlayBackupCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (PauseBackupCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (DeleteJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (EditJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (ExecuteJobCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (ExecuteAllJobsCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                }
+            }
         }
 
         public double CurrentProgress
@@ -177,7 +205,7 @@ namespace EasySave.ViewModel
             set => SetProperty(ref _settingsEncryptionMode, value);
         }
 
-        // --- Commands ---
+        // Commands 
 
         public ICommand CreateJobCommand { get; }
         public ICommand DeleteJobCommand { get; }
@@ -192,6 +220,10 @@ namespace EasySave.ViewModel
         public ICommand RefreshLogsCommand { get; }
         public ICommand OpenLogsFolderCommand { get; }
         public ICommand StopBackupCommand { get; }
+
+        // Added commands
+        public ICommand PauseBackupCommand { get; }
+        public ICommand PlayBackupCommand { get; }
 
         public bool IsEditing
         {
@@ -228,7 +260,7 @@ namespace EasySave.ViewModel
             }
         }
 
-        // --- Methods ---
+        //  Methods
 
         private bool CanCreateJob()
         {
@@ -557,6 +589,31 @@ namespace EasySave.ViewModel
         public List<BackupJob> GetAllJobs()
         {
             return Jobs.ToList();
+        }
+
+
+        private void PauseSelected()
+        {
+            if (SelectedJob == null) return;
+            SelectedJob.IsPaused = true;
+            SelectedJob.Status = "Paused";
+            StatusMessage = $"Job '{SelectedJob.Name}' paused.";
+        }
+
+        private void PlaySelected()
+        {
+            if (SelectedJob == null) return;
+            SelectedJob.IsPaused = false;
+            SelectedJob.Status = "Running";
+            StatusMessage = $"Job '{SelectedJob.Name}' resumed.";
+        }
+
+        private void StopSelected()
+        {
+            if (SelectedJob == null) return;
+            SelectedJob.IsStopped = true;
+            SelectedJob.Status = "Stopped";
+            StatusMessage = $"Job '{SelectedJob.Name}' stopped.";
         }
     }
 }

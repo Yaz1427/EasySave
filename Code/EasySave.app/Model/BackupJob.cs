@@ -14,5 +14,12 @@ namespace EasySave.Models
         public string SourceDir { get; set; } = string.Empty;
         public string TargetDir { get; set; } = string.Empty;
         public JobType Type { get; set; }
-    }
+
+		public volatile bool IsPaused;
+
+		public volatile bool IsStopped;
+
+		public string Status { get; set; } = "Idle"; // Idle / Running / Paused / Stopped / End
+	}
 }
+

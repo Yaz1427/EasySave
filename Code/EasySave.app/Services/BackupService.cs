@@ -10,258 +10,322 @@ using EasyLog.Models;
 
 namespace EasySave.Services
 {
-    public class BackupService
-    {
-        private readonly LoggerService _logger;
-        private readonly RealTimeStateService _realTimeStateService;
-        private readonly CryptoSoftService _cryptoSoftService;
-        private readonly BusinessSoftwareService _businessSoftwareService;
-        private List<string> _encryptExtensions;
+	public class BackupService
+	{
+		private readonly LoggerService _logger;
+		private readonly RealTimeStateService _realTimeStateService;
+		private readonly CryptoSoftService _cryptoSoftService;
+		private readonly BusinessSoftwareService _businessSoftwareService;
+		private List<string> _encryptExtensions;
 
-        public BackupService(AppSettings settings)
-        {
-            string baseDir = Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", "..", "..", ".."));
-            string logsDir = Path.Combine(baseDir, "LogsEasySave");
+		public BackupService(AppSettings settings)
+		{
+			string baseDir = Path.GetFullPath(Path.Combine(
+				AppDomain.CurrentDomain.BaseDirectory,
+				"..", "..", "..", "..", ".."));
+			string logsDir = Path.Combine(baseDir, "LogsEasySave");
 
-            _logger = new LoggerService(logsDir, settings.GetLogFormat());
-            _realTimeStateService = new RealTimeStateService();
-            _cryptoSoftService = new CryptoSoftService();
-            _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
-            _businessSoftwareService = new BusinessSoftwareService(settings.BusinessSoftwareProcess);
-            _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
-        }
+			_logger = new LoggerService(logsDir, settings.GetLogFormat());
+			_realTimeStateService = new RealTimeStateService();
+			_cryptoSoftService = new CryptoSoftService();
+			_cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
+			_businessSoftwareService = new BusinessSoftwareService(settings.BusinessSoftwareProcess);
+			_encryptExtensions = settings.EncryptExtensions ?? new List<string>();
+		}
 
-        public void UpdateSettings(AppSettings settings)
-        {
-            _logger.Format = settings.GetLogFormat();
-            _businessSoftwareService.ProcessName = settings.BusinessSoftwareProcess;
-            _cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
-            _encryptExtensions = settings.EncryptExtensions ?? new List<string>();
-        }
+		public void UpdateSettings(AppSettings settings)
+		{
+			_logger.Format = settings.GetLogFormat();
+			_businessSoftwareService.ProcessName = settings.BusinessSoftwareProcess;
+			_cryptoSoftService.Mode = settings.EncryptionMode == "XOR" ? EncryptionMode.XOR : EncryptionMode.AES;
+			_encryptExtensions = settings.EncryptExtensions ?? new List<string>();
+		}
 
-        /// <summary>
-        /// Checks if the business software is currently running.
-        /// </summary>
-        public bool IsBusinessSoftwareRunning()
-        {
-            return _businessSoftwareService.IsRunning();
-        }
+		/// <summary>
+		/// Checks if the business software is currently running.
+		/// </summary>
+		public bool IsBusinessSoftwareRunning()
+		{
+			return _businessSoftwareService.IsRunning();
+		}
 
-        public void ExecuteBackup(BackupJob job, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
-        {
-            if (job == null) throw new ArgumentNullException(nameof(job));
-            if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir is empty.");
-            if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir is empty.");
+		public void ExecuteBackup(BackupJob job, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
+		{
+			if (job == null) throw new ArgumentNullException(nameof(job));
+			if (string.IsNullOrWhiteSpace(job.SourceDir)) throw new ArgumentException("SourceDir is empty.");
+			if (string.IsNullOrWhiteSpace(job.TargetDir)) throw new ArgumentException("TargetDir is empty.");
 
-            // v2.0: Block if business software is running
-            if (_businessSoftwareService.IsRunning())
-                throw new InvalidOperationException("Business software is running. Backup blocked.");
+			if (!Directory.Exists(job.SourceDir))
+				throw new DirectoryNotFoundException($"Source not found: {job.SourceDir}");
 
-            if (!Directory.Exists(job.SourceDir))
-                throw new DirectoryNotFoundException($"Source not found: {job.SourceDir}");
+			Directory.CreateDirectory(job.TargetDir);
 
-            Directory.CreateDirectory(job.TargetDir);
+			var state = _realTimeStateService.CreateInitialState(job);
+			_realTimeStateService.UpdateState(state);
 
-            var state = _realTimeStateService.CreateInitialState(job);
-            _realTimeStateService.UpdateState(state);
+			var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+			state.TotalFilesToCopy = allFiles.Count;
+			state.TotalFilesSize = allFiles.Sum(f => new FileInfo(f).Length);
+			state.RemainingFiles = allFiles.Count;
+			state.RemainingSize = state.TotalFilesSize;
+			_realTimeStateService.UpdateState(state);
 
-            var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
-            state.TotalFilesToCopy = allFiles.Count;
-            state.TotalFilesSize = allFiles.Sum(f => new FileInfo(f).Length);
-            state.RemainingFiles = allFiles.Count;
-            state.RemainingSize = state.TotalFilesSize;
-            _realTimeStateService.UpdateState(state);
+			try
+			{
+				if (job.Type == JobType.Full)
+					CopyDirectoryFull(job, state, progress, cancellationToken);
+				else if (job.Type == JobType.Differential)
+					CopyDirectoryDifferential(job, state, progress, cancellationToken);
+				else
+					throw new NotSupportedException($"Unsupported job type: {job.Type}");
 
-            try
-            {
-                if (job.Type == JobType.Full)
-                    CopyDirectoryFull(job, state, progress, cancellationToken);
-                else if (job.Type == JobType.Differential)
-                    CopyDirectoryDifferential(job, state, progress, cancellationToken);
-                else
-                    throw new NotSupportedException($"Unsupported job type: {job.Type}");
+				state.Status = "End";
+				state.Progress = 100;
+				state.RemainingFiles = 0;
+				state.RemainingSize = 0;
+				state.CurrentSourceFile = "";
+				state.CurrentTargetFile = "";
+				state.LastActionTimestamp = DateTime.Now;
+				_realTimeStateService.UpdateState(state);
+			}
+			catch (OperationCanceledException)
+			{
+				// Arrêt demandé par l'utilisateur — mettre à jour l'état et logguer proprement puis sortir
+				state.Status = "Stopped by user";
+				state.LastActionTimestamp = DateTime.Now;
+				_realTimeStateService.UpdateState(state);
 
-                state.Status = "End";
-                state.Progress = 100;
-                state.RemainingFiles = 0;
-                state.RemainingSize = 0;
-                state.CurrentSourceFile = "";
-                state.CurrentTargetFile = "";
-                state.LastActionTimestamp = DateTime.Now;
-                _realTimeStateService.UpdateState(state);
-            }
-            catch (BusinessSoftwareRunningException)
-            {
-                state.Status = "Stopped - Business software detected";
-                state.LastActionTimestamp = DateTime.Now;
-                _realTimeStateService.UpdateState(state);
+				var stopEntry = new LogEntry
+				{
+					Timestamp = DateTime.Now,
+					JobName = job.Name,
+					SourcePath = state.CurrentSourceFile,
+					TargetPath = state.CurrentTargetFile,
+					FileSize = 0,
+					TransferTime = -1,
+					EncryptionTime = 0
+				};
+				_logger.SaveLog(stopEntry);
 
-                var stopEntry = new LogEntry
-                {
-                    Timestamp = DateTime.Now,
-                    JobName = job.Name,
-                    SourcePath = state.CurrentSourceFile,
-                    TargetPath = state.CurrentTargetFile,
-                    FileSize = 0,
-                    TransferTime = -1,
-                    EncryptionTime = 0
-                };
-                _logger.SaveLog(stopEntry);
-                throw;
-            }
-        }
+				// Ne pas relancer l'exception => le Task/await se termine proprement
+				return;
+			}
+			catch (BusinessSoftwareRunningException)
+			{
+				state.Status = "Stopped - Business software detected";
+				state.LastActionTimestamp = DateTime.Now;
+				_realTimeStateService.UpdateState(state);
 
-        private void CopyDirectoryFull(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
-        {
-            string sourceFolderName = new DirectoryInfo(job.SourceDir).Name;
-            string actualTargetDir = Path.Combine(job.TargetDir, sourceFolderName);
-            Directory.CreateDirectory(actualTargetDir);
+				var stopEntry = new LogEntry
+				{
+					Timestamp = DateTime.Now,
+					JobName = job.Name,
+					SourcePath = state.CurrentSourceFile,
+					TargetPath = state.CurrentTargetFile,
+					FileSize = 0,
+					TransferTime = -1,
+					EncryptionTime = 0
+				};
+				_logger.SaveLog(stopEntry);
+				throw;
+			}
+		}
 
-            var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
-            int processedFiles = 0;
+		private void CopyDirectoryFull(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
+		{
+			string sourceFolderName = new DirectoryInfo(job.SourceDir).Name;
+			string actualTargetDir = Path.Combine(job.TargetDir, sourceFolderName);
+			Directory.CreateDirectory(actualTargetDir);
 
-            foreach (var sourceFile in allFiles)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+			var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+			int processedFiles = 0;
 
-                // v2.0: Check business software between files
-                if (_businessSoftwareService.IsRunning())
-                    throw new BusinessSoftwareRunningException();
+			foreach (var sourceFile in allFiles)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
 
-                var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                var targetFile = Path.Combine(actualTargetDir, relativePath);
+				WaitIfPausedOrBusinessRunning(job, cancellationToken);
 
-                state.CurrentSourceFile = sourceFile;
-                state.CurrentTargetFile = targetFile;
-                state.LastActionTimestamp = DateTime.Now;
-                _realTimeStateService.UpdateState(state);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-                CopyFileWithTiming(job, sourceFile, targetFile);
+				var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+				var targetFile = Path.Combine(actualTargetDir, relativePath);
 
-                processedFiles++;
-                state.Progress = (double)processedFiles / allFiles.Count * 100;
-                state.RemainingFiles = allFiles.Count - processedFiles;
-                state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
-                _realTimeStateService.UpdateState(state);
-                progress?.Report(state.Progress);
-            }
-        }
+				state.CurrentSourceFile = sourceFile;
+				state.CurrentTargetFile = targetFile;
+				state.LastActionTimestamp = DateTime.Now;
+				_realTimeStateService.UpdateState(state);
 
-        private void CopyDirectoryDifferential(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
-        {
-            string sourceFolderName = new DirectoryInfo(job.SourceDir).Name;
-            string actualTargetDir = Path.Combine(job.TargetDir, sourceFolderName);
-            Directory.CreateDirectory(actualTargetDir);
+				Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
+				CopyFileWithTiming(job, sourceFile, targetFile, cancellationToken);
 
-            var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
-            var filesToCopy = new List<string>();
+				processedFiles++;
+				state.Progress = (double)processedFiles / allFiles.Count * 100;
+				state.RemainingFiles = allFiles.Count - processedFiles;
+				state.RemainingSize = allFiles.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+				_realTimeStateService.UpdateState(state);
+				progress?.Report(state.Progress);
+			}
+		}
 
-            foreach (var sourceFile in allFiles)
-            {
-                var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                var targetFile = Path.Combine(actualTargetDir, relativePath);
+		private void CopyDirectoryDifferential(BackupJob job, RealTimeState state, IProgress<double>? progress, CancellationToken cancellationToken)
+		{
+			string sourceFolderName = new DirectoryInfo(job.SourceDir).Name;
+			string actualTargetDir = Path.Combine(job.TargetDir, sourceFolderName);
+			Directory.CreateDirectory(actualTargetDir);
 
-                bool shouldCopy =
-                    !File.Exists(targetFile) ||
-                    File.GetLastWriteTimeUtc(sourceFile) > File.GetLastWriteTimeUtc(targetFile) ||
-                    new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length;
+			var allFiles = Directory.EnumerateFiles(job.SourceDir, "*", SearchOption.AllDirectories).ToList();
+			var filesToCopy = new List<string>();
 
-                if (shouldCopy)
-                    filesToCopy.Add(sourceFile);
-            }
+			foreach (var sourceFile in allFiles)
+			{
+				var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+				var targetFile = Path.Combine(actualTargetDir, relativePath);
 
-            int processedFiles = 0;
+				bool shouldCopy =
+					!File.Exists(targetFile) ||
+					File.GetLastWriteTimeUtc(sourceFile) > File.GetLastWriteTimeUtc(targetFile) ||
+					new FileInfo(sourceFile).Length != new FileInfo(targetFile).Length;
 
-            foreach (var sourceFile in filesToCopy)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+				if (shouldCopy)
+					filesToCopy.Add(sourceFile);
+			}
 
-                // v2.0: Check business software between files
-                if (_businessSoftwareService.IsRunning())
-                    throw new BusinessSoftwareRunningException();
+			int processedFiles = 0;
 
-                var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
-                var targetFile = Path.Combine(actualTargetDir, relativePath);
+			foreach (var sourceFile in filesToCopy)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
 
-                state.CurrentSourceFile = sourceFile;
-                state.CurrentTargetFile = targetFile;
-                state.LastActionTimestamp = DateTime.Now;
-                _realTimeStateService.UpdateState(state);
+				WaitIfPausedOrBusinessRunning(job, cancellationToken);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
-                CopyFileWithTiming(job, sourceFile, targetFile);
 
-                processedFiles++;
-                state.Progress = (double)processedFiles / filesToCopy.Count * 100;
-                state.RemainingFiles = filesToCopy.Count - processedFiles;
-                state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
-                _realTimeStateService.UpdateState(state);
-                progress?.Report(state.Progress);
-            }
-        }
+				var relativePath = Path.GetRelativePath(job.SourceDir, sourceFile);
+				var targetFile = Path.Combine(actualTargetDir, relativePath);
 
-        private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile)
-        {
-            var sw = Stopwatch.StartNew();
-            long fileSize = new FileInfo(sourceFile).Length;
+				state.CurrentSourceFile = sourceFile;
+				state.CurrentTargetFile = targetFile;
+				state.LastActionTimestamp = DateTime.Now;
+				_realTimeStateService.UpdateState(state);
 
-            try
-            {
-                File.Copy(sourceFile, targetFile, overwrite: true);
-                sw.Stop();
+				Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
+				CopyFileWithTiming(job, sourceFile, targetFile, cancellationToken);
 
-                // v2.0: Encrypt if needed
-                int encryptionTime = 0;
-                string ext = Path.GetExtension(sourceFile);
-                if (_encryptExtensions.Any(e =>
-                    e.Equals(ext, StringComparison.OrdinalIgnoreCase) ||
-                    ("." + e.TrimStart('.')).Equals(ext, StringComparison.OrdinalIgnoreCase)))
-                {
-                    encryptionTime = _cryptoSoftService.EncryptFile(targetFile);
-                }
+				processedFiles++;
+				state.Progress = (double)processedFiles / filesToCopy.Count * 100;
+				state.RemainingFiles = filesToCopy.Count - processedFiles;
+				state.RemainingSize = filesToCopy.Skip(processedFiles).Sum(f => new FileInfo(f).Length);
+				_realTimeStateService.UpdateState(state);
+				progress?.Report(state.Progress);
+			}
+		}
 
-                var entry = new LogEntry
-                {
-                    Timestamp = DateTime.Now,
-                    JobName = job.Name,
-                    SourcePath = sourceFile,
-                    TargetPath = targetFile,
-                    FileSize = fileSize,
-                    TransferTime = (int)sw.ElapsedMilliseconds,
-                    EncryptionTime = encryptionTime
-                };
+		private void CopyFileCancellable(string sourceFile, string targetFile, BackupJob job, CancellationToken token)
+		{
+			const int bufferSize = 1024 * 1024; // 1MB
 
-                _logger.SaveLog(entry);
-            }
-            catch (Exception)
-            {
-                sw.Stop();
+			using var source = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, useAsync: false);
+			using var dest = new FileStream(targetFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, useAsync: false);
 
-                var entry = new LogEntry
-                {
-                    Timestamp = DateTime.Now,
-                    JobName = job.Name,
-                    SourcePath = sourceFile,
-                    TargetPath = targetFile,
-                    FileSize = fileSize,
-                    TransferTime = -(int)sw.ElapsedMilliseconds,
-                    EncryptionTime = 0
-                };
+			var buffer = new byte[bufferSize];
+			int read;
 
-                _logger.SaveLog(entry);
-                throw;
-            }
-        }
-    }
+			while ((read = source.Read(buffer, 0, buffer.Length)) > 0)
+			{
+				// Stop immédiat + pause auto/manuelle pendant le transfert aussi
+				WaitIfPausedOrBusinessRunning(job, token);
 
-    public class BusinessSoftwareRunningException : Exception
-    {
-        public BusinessSoftwareRunningException()
-            : base("Business software detected. Backup stopped after current file.")
-        {
-        }
-    }
+				dest.Write(buffer, 0, read);
+			}
+		}
+
+		private void CopyFileWithTiming(BackupJob job, string sourceFile, string targetFile, CancellationToken token)
+		{
+			var sw = Stopwatch.StartNew();
+			long fileSize = new FileInfo(sourceFile).Length;
+
+			try
+			{
+				CopyFileCancellable(sourceFile, targetFile, job, token);
+				sw.Stop();
+
+				// v2.0: Encrypt if needed
+				int encryptionTime = 0;
+				string ext = Path.GetExtension(sourceFile);
+				if (_encryptExtensions.Any(e =>
+					e.Equals(ext, StringComparison.OrdinalIgnoreCase) ||
+					("." + e.TrimStart('.')).Equals(ext, StringComparison.OrdinalIgnoreCase)))
+				{
+					encryptionTime = _cryptoSoftService.EncryptFile(targetFile);
+				}
+
+				var entry = new LogEntry
+				{
+					Timestamp = DateTime.Now,
+					JobName = job.Name,
+					SourcePath = sourceFile,
+					TargetPath = targetFile,
+					FileSize = fileSize,
+					TransferTime = (int)sw.ElapsedMilliseconds,
+					EncryptionTime = encryptionTime
+				};
+
+				_logger.SaveLog(entry);
+			}
+			catch (Exception)
+			{
+				sw.Stop();
+
+				var entry = new LogEntry
+				{
+					Timestamp = DateTime.Now,
+					JobName = job.Name,
+					SourcePath = sourceFile,
+					TargetPath = targetFile,
+					FileSize = fileSize,
+					TransferTime = -(int)sw.ElapsedMilliseconds,
+					EncryptionTime = 0
+				};
+
+				_logger.SaveLog(entry);
+				throw;
+			}
+		}
+
+		// v3.0 : Wait loop for pause
+		private void WaitIfPausedOrBusinessRunning(BackupJob job, CancellationToken token)
+		{
+			while (true)
+			{
+				token.ThrowIfCancellationRequested();
+
+				// Stop immédiat demandé par l'utilisateur
+				if (job.IsStopped)
+					throw new OperationCanceledException("Job stopped by user.");
+
+				// Pause manuelle OU pause auto (logiciel métier)
+				bool mustPause = job.IsPaused || _businessSoftwareService.IsRunning();
+
+				if (!mustPause)
+					return;
+
+				Thread.Sleep(200); // simple + efficace
+			}
+		}
+
+
+
+
+	}
+
+
+
+	public class BusinessSoftwareRunningException : Exception
+	{
+		public BusinessSoftwareRunningException()
+			: base("Business software detected. Backup stopped after current file.")
+		{
+		}
+	}
+
+
 }

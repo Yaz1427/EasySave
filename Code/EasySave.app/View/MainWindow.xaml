@@ -247,11 +247,15 @@
                                     Command="{Binding EditJobCommand}" Click="EditButton_Click" Margin="0,0,8,0"/>
                             <Button Content="{DynamicResource BtnRun}" Style="{StaticResource AccentButton}"
                                     Command="{Binding ExecuteJobCommand}" Margin="0,0,8,0"/>
-                            <Button Content="{DynamicResource BtnRunAll}" Style="{StaticResource AccentButton}"
+							<Button Content="{DynamicResource BtnRunAll}" Style="{StaticResource AccentButton}"
                                     Command="{Binding ExecuteAllJobsCommand}" Margin="0,0,8,0"/>
+							<Button Content="Play" Style="{StaticResource SuccessButton}"
+                                    Command="{Binding PlayBackupCommand}" Margin="0,0,8,0" Background="#FF49B35E"/>
+							<Button Content="Pause" Style="{StaticResource WarningButton}"
+                                    Command="{Binding PauseBackupCommand}" Margin="0,0,8,0" Background="#FFFFD83B"/>
                             <Button Content="{DynamicResource BtnStop}" Style="{StaticResource DangerButton}"
-                                    Command="{Binding StopBackupCommand}"/>
-                        </StackPanel>
+                                    Command="{Binding StopBackupCommand}" Width="71" Background="Red"/> 
+						</StackPanel>
                     </Grid>
                 </Border>
             </TabItem>
