@@ -1,0 +1,15 @@
+services:
+  logserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5080:5080"
+    volumes:
+      - logserver-data:/app/Logs
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_URLS=http://+:5080
+
+volumes:
+  logserver-data:
