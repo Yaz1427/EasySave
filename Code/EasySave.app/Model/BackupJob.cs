@@ -1,29 +1,59 @@
+using System;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
 namespace EasySave.Models
 {
-    /// <summary>
-    /// Type de sauvegarde autorisé par ProSoft.
-    /// </summary>
     public enum JobType
     {
-        Full,         // Sauvegarde complète
-        Differential  // Sauvegarde différentielle
+        Full,
+        Differential
     }
 
-    /// <summary>
-    /// Représente un travail de sauvegarde (un des 5 slots).
-    /// </summary>
-    public class BackupJob
+    public class BackupJob : INotifyPropertyChanged
     {
-        // Nom de la sauvegarde
         public string Name { get; set; } = string.Empty;
-
-        // Répertoire source (format UNC ou local)
         public string SourceDir { get; set; } = string.Empty;
-
-        // Répertoire cible
         public string TargetDir { get; set; } = string.Empty;
-
-        // Type : complète ou différentielle
         public JobType Type { get; set; }
+
+        public volatile bool IsPaused;
+        public volatile bool IsStopped;
+
+        public string Status { get; set; } = "Idle"; // Idle / Running / Paused / Stopped / End
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetProperty(ref _isSelected, value);
+        }
+
+        private double _progress;
+        public double Progress
+        {
+            get => _progress;
+            set => SetProperty(ref _progress, value);
+        }
+
+        // INotifyPropertyChanged implementation
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(storage, value))
+                return false;
+
+            storage = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
     }
 }
+

@@ -1,0 +1,71 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Window -->
+    <sys:String x:Key="AppTitle">EasySave v2.0</sys:String>
+
+    <!-- Tabs -->
+    <sys:String x:Key="TabJobs">Backup Jobs</sys:String>
+    <sys:String x:Key="TabCreate">Create Job</sys:String>
+    <sys:String x:Key="TabEdit">Edit Job</sys:String>
+    <sys:String x:Key="TabLogs">Logs</sys:String>
+    <sys:String x:Key="TabSettings">Settings</sys:String>
+
+    <!-- Job list -->
+    <sys:String x:Key="LblName">Name</sys:String>
+    <sys:String x:Key="LblSource">Source</sys:String>
+    <sys:String x:Key="LblTarget">Target</sys:String>
+    <sys:String x:Key="LblType">Type</sys:String>
+    <sys:String x:Key="LblFull">Full</sys:String>
+    <sys:String x:Key="LblDifferential">Differential</sys:String>
+
+    <!-- Buttons -->
+    <sys:String x:Key="BtnRun">Run</sys:String>
+    <sys:String x:Key="BtnRunAll">Run All</sys:String>
+    <sys:String x:Key="BtnDelete">Delete</sys:String>
+    <sys:String x:Key="BtnCreate">Create</sys:String>
+    <sys:String x:Key="BtnSave">Save</sys:String>
+    <sys:String x:Key="BtnBrowse">Browse...</sys:String>
+    <sys:String x:Key="BtnEdit">Edit</sys:String>
+    <sys:String x:Key="BtnSaveEdit">Save Changes</sys:String>
+    <sys:String x:Key="BtnCancel">Cancel</sys:String>
+    <sys:String x:Key="BtnStop">Stop</sys:String>
+
+    <!-- Create form -->
+    <sys:String x:Key="LblJobName">Job Name:</sys:String>
+    <sys:String x:Key="LblSourceDir">Source Directory:</sys:String>
+    <sys:String x:Key="LblTargetDir">Target Directory:</sys:String>
+    <sys:String x:Key="LblBackupType">Backup Type:</sys:String>
+
+    <!-- Settings -->
+    <sys:String x:Key="LblLanguage">Language:</sys:String>
+    <sys:String x:Key="LblLogFormat">Log Format:</sys:String>
+    <sys:String x:Key="LblEncryptionMode">Encryption mode:</sys:String>
+    <sys:String x:Key="LblEncryptExt">Extensions to encrypt:</sys:String>
+    <sys:String x:Key="LblEncryptExtHint">e.g. .txt; .docx; .pdf</sys:String>
+    <sys:String x:Key="LblBusinessSoftware">Business Software Process:</sys:String>
+    <sys:String x:Key="LblBusinessSoftwareHint">e.g. CalculatorApp</sys:String>
+    <sys:String x:Key="LblCryptoSoftPath">CryptoSoft Path:</sys:String>
+    <sys:String x:Key="LblSaveSettings">Save Settings</sys:String>
+
+    <!-- Status -->
+    <sys:String x:Key="LblProgress">Progress:</sys:String>
+    <sys:String x:Key="LblStatus">Status:</sys:String>
+    <sys:String x:Key="LblCurrentJob">Current Job:</sys:String>
+    <sys:String x:Key="LblNoJobs">No backup jobs configured.</sys:String>
+
+    <!-- Logs -->
+    <sys:String x:Key="LblLogFile">Log File:</sys:String>
+    <sys:String x:Key="BtnRefresh">Refresh</sys:String>
+    <sys:String x:Key="BtnOpenFolder">Open Folder</sys:String>
+    <sys:String x:Key="LblTimestamp">Timestamp</sys:String>
+    <sys:String x:Key="LblLogJobName">Job Name</sys:String>
+    <sys:String x:Key="LblSourcePath">Source</sys:String>
+    <sys:String x:Key="LblTargetPath">Target</sys:String>
+    <sys:String x:Key="LblFileSize">Size (bytes)</sys:String>
+    <sys:String x:Key="LblTransferTime">Transfer (ms)</sys:String>
+    <sys:String x:Key="LblEncryptTime">Encrypt (ms)</sys:String>
+    <sys:String x:Key="LblNoLogs">No log files found.</sys:String>
+
+</ResourceDictionary>
