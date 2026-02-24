@@ -8,16 +8,10 @@ using EasyLog.Models;
 
 namespace EasyLog.Services
 {
-    public enum LogFormat
-    {
-        JSON,
-        XML
-    }
-
     public class LoggerService
     {
         private readonly string _logDirectory;
-        private LogFormat _format;
+        private EasyLog.Models.LogFormat _format;
 
         public LoggerService(string? logDirectory = null, LogFormat format = LogFormat.JSON)
         {

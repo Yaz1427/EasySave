@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EasyLog.Services;
+using EasyLog.Models;
 
 namespace EasySave.Models
 {
@@ -24,8 +24,8 @@ namespace EasySave.Models
         public LogFormat GetLogFormat()
         {
             return LogFormat.Equals("XML", StringComparison.OrdinalIgnoreCase)
-                ? EasyLog.Services.LogFormat.XML
-                : EasyLog.Services.LogFormat.JSON;
+                ? EasyLog.Models.LogFormat.XML
+                : EasyLog.Models.LogFormat.JSON;
         }
     }
 }
