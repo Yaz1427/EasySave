@@ -31,6 +31,14 @@ namespace EasySave.View
 
             // Set encryption mode combo
             EncryptionModeComboBox.SelectedIndex = vm.SettingsEncryptionMode == "XOR" ? 1 : 0;
+
+            // v3.0: Set log destination combo
+            LogDestinationComboBox.SelectedIndex = vm.SettingsLogDestination switch
+            {
+                "Centralized" => 1,
+                "Both" => 2,
+                _ => 0
+            };
         }
 
         private void BackupTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -92,19 +100,32 @@ namespace EasySave.View
             }
         }
 
+        private void LogDestinationComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var vm = DataContext as MainViewModel;
+            if (vm == null) return;
+
+            var combo = sender as ComboBox;
+            var selected = combo?.SelectedItem as ComboBoxItem;
+            if (selected?.Tag is string dest)
+            {
+                vm.SettingsLogDestination = dest;
+            }
+        }
+
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as MainViewModel;
             if (vm?.SelectedJob == null) return;
 
-            // Switch to the Create/Edit tab (index 1)
-            MainTabControl.SelectedIndex = 1;
+            // Switch to the Create/Edit tab (index 2, after Running tab)
+            MainTabControl.SelectedIndex = 2;
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            // Switch to the Create/Edit tab (index 1)
-            MainTabControl.SelectedIndex = 1;
+            // Switch to the Create/Edit tab (index 2)
+            MainTabControl.SelectedIndex = 2;
         }
     }
 }

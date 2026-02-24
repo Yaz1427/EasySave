@@ -1,0 +1,26 @@
+[
+  {
+    "JobName": "test",
+    "LastActionTimestamp": "2026-02-24T20:18:50.4060787+01:00",
+    "Status": "End",
+    "TotalFilesToCopy": 16,
+    "TotalFilesSize": 68208794,
+    "Progress": 100,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "CurrentSourceFile": "",
+    "CurrentTargetFile": ""
+  },
+  {
+    "JobName": "yest",
+    "LastActionTimestamp": "2026-02-24T20:19:08.3812625+01:00",
+    "Status": "End",
+    "TotalFilesToCopy": 147,
+    "TotalFilesSize": 7897074,
+    "Progress": 100,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "CurrentSourceFile": "",
+    "CurrentTargetFile": ""
+  }
+]

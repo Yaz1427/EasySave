@@ -3,7 +3,7 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <!-- Window -->
-    <sys:String x:Key="AppTitle">EasySave v2.0</sys:String>
+    <sys:String x:Key="AppTitle">EasySave v3.0</sys:String>
 
     <!-- Tabs -->
     <sys:String x:Key="TabJobs">Backup Jobs</sys:String>
@@ -67,5 +67,22 @@
     <sys:String x:Key="LblTransferTime">Transfer (ms)</sys:String>
     <sys:String x:Key="LblEncryptTime">Encrypt (ms)</sys:String>
     <sys:String x:Key="LblNoLogs">No log files found.</sys:String>
+
+    <!-- v3.0 -->
+    <sys:String x:Key="TabRunning">Running Jobs</sys:String>
+    <sys:String x:Key="LblRunningJobs">Running Jobs - Real-time Monitoring</sys:String>
+    <sys:String x:Key="BtnPause">Pause</sys:String>
+    <sys:String x:Key="BtnPlay">Play</sys:String>
+    <sys:String x:Key="BtnPauseAll">Pause All</sys:String>
+    <sys:String x:Key="BtnResumeAll">Resume All</sys:String>
+    <sys:String x:Key="BtnStopAll">Stop All</sys:String>
+    <sys:String x:Key="LblPriorityExt">Priority file extensions:</sys:String>
+    <sys:String x:Key="LblPriorityExtHint">e.g. .docx; .xlsx; .pdf (processed first)</sys:String>
+    <sys:String x:Key="LblMaxFileSize">Max large file size (KB):</sys:String>
+    <sys:String x:Key="LblMaxFileSizeHint">Files above this size cannot transfer in parallel</sys:String>
+    <sys:String x:Key="LblLogDestination">Log destination:</sys:String>
+    <sys:String x:Key="LblLogServerUrl">Log server URL:</sys:String>
+    <sys:String x:Key="LblLogServerUrlHint">e.g. http://localhost:5080</sys:String>
+    <sys:String x:Key="LblBusinessSoftwareWarning">Business software detected - Jobs paused</sys:String>
 
 </ResourceDictionary>

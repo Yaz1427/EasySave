@@ -3,7 +3,7 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <!-- Window -->
-    <sys:String x:Key="AppTitle">EasySave v2.0</sys:String>
+    <sys:String x:Key="AppTitle">EasySave v3.0</sys:String>
 
     <!-- Tabs -->
     <sys:String x:Key="TabJobs">Ixeddimen n uḥraz</sys:String>
@@ -67,5 +67,22 @@
     <sys:String x:Key="LblTransferTime">Azen (ms)</sys:String>
     <sys:String x:Key="LblEncryptTime">Awgelhen (ms)</sys:String>
     <sys:String x:Key="LblNoLogs">Ulac afaylu n uɣmis.</sys:String>
+
+    <!-- v3.0 -->
+    <sys:String x:Key="TabRunning">Ixeddimen iteddun</sys:String>
+    <sys:String x:Key="LblRunningJobs">Ixeddimen iteddun - Asefrek deg wakud</sys:String>
+    <sys:String x:Key="BtnPause">Sbedd</sys:String>
+    <sys:String x:Key="BtnPlay">Kemmel</sys:String>
+    <sys:String x:Key="BtnPauseAll">Sbedd akk</sys:String>
+    <sys:String x:Key="BtnResumeAll">Kemmel akk</sys:String>
+    <sys:String x:Key="BtnStopAll">Seḥbes akk</sys:String>
+    <sys:String x:Key="LblPriorityExt">Isiɣzaf imezwura :</sys:String>
+    <sys:String x:Key="LblPriorityExtHint">am: .docx; .xlsx; .pdf</sys:String>
+    <sys:String x:Key="LblMaxFileSize">Tiddi tafellayt n ufaylu (Ko) :</sys:String>
+    <sys:String x:Key="LblMaxFileSizeHint">Ifuyla nnig-a ur zmiren ara ad ttwazenin deg tikkelt</sys:String>
+    <sys:String x:Key="LblLogDestination">Ansa n uɣmis :</sys:String>
+    <sys:String x:Key="LblLogServerUrl">URL n uqeddac n uɣmis :</sys:String>
+    <sys:String x:Key="LblLogServerUrlHint">am: http://localhost:5080</sys:String>
+    <sys:String x:Key="LblBusinessSoftwareWarning">Aseɣẓan yettwaf - Ixeddimen ttusebdden</sys:String>
 
 </ResourceDictionary>

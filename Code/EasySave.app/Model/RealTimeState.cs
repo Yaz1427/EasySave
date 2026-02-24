@@ -3,40 +3,39 @@ using System;
 namespace EasySave.Models
 {
     /// <summary>
-    /// Structure pour le fichier "état temps réel" (state.json).
-    /// Conforme aux spécifications client
+    /// Real-time state structure for backup jobs (state.json).
+    /// Contains live progress information per backup job.
     /// </summary>
     public class RealTimeState
     {
-        // Appellation du travail de sauvegarde
+        // Backup job name
         public string JobName { get; set; } = string.Empty;
 
-        // Horodatage de la dernière action
+        // Timestamp of the last action
         public DateTime LastActionTimestamp { get; set; }
 
-        // État du travail de Sauvegarde (Actif, Non Actif, End, etc.)
+        // Backup job state (Active, Inactive, End, etc.)
         public string Status { get; set; } = "Inactive";
 
-        // Si le travail est actif :
-        // Le nombre total de fichiers éligibles
+        // Total number of eligible files
         public int TotalFilesToCopy { get; set; }
 
-        // La taille des fichiers à transférer
+        // Total size of files to transfer (bytes)
         public long TotalFilesSize { get; set; }
 
-        // La progression (en pourcentage)
+        // Progress percentage
         public double Progress { get; set; }
 
-        // Nombre de fichiers restants
+        // Number of remaining files
         public int RemainingFiles { get; set; }
 
-        // Taille des fichiers restants
+        // Size of remaining files (bytes)
         public long RemainingSize { get; set; }
 
-        // Adresse complète du fichier Source en cours de sauvegarde
+        // Full path of the source file currently being copied
         public string CurrentSourceFile { get; set; } = string.Empty;
 
-        // Adresse complète du fichier de destination
+        // Full path of the target destination file
         public string CurrentTargetFile { get; set; } = string.Empty;
     }
 }

@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EasySave.ViewModel"
         Title="{DynamicResource AppTitle}"
-        Height="700" Width="1000"
-        MinHeight="550" MinWidth="800"
+        Height="780" Width="1100"
+        MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen"
         Background="#B8B8B8">
 
@@ -23,12 +23,13 @@
         <SolidColorBrush x:Key="GreenBrush" Color="#5B7B6F"/>
         <SolidColorBrush x:Key="RedBrush" Color="#9E4A4A"/>
         <SolidColorBrush x:Key="YellowBrush" Color="#8B7B3A"/>
+        <SolidColorBrush x:Key="BlueBrush" Color="#4A7B9E"/>
         <SolidColorBrush x:Key="ButtonBgBrush" Color="#6B7B8D"/>
         <SolidColorBrush x:Key="ButtonHoverBrush" Color="#7D8D9F"/>
         <SolidColorBrush x:Key="CardBrush" Color="#E8E0D8"/>
         <SolidColorBrush x:Key="StatusBarBrush" Color="#C8C0B8"/>
 
-        <!-- Button Style - Rounded pill buttons like screenshot -->
+        <!-- Button Style - Rounded pill buttons -->
         <Style x:Key="AccentButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource ButtonBgBrush}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -70,6 +71,23 @@
             <Setter Property="Background" Value="{StaticResource YellowBrush}"/>
         </Style>
 
+        <Style x:Key="SmallButton" TargetType="Button" BasedOn="{StaticResource AccentButton}">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="10,4"/>
+        </Style>
+
+        <Style x:Key="SmallDangerButton" TargetType="Button" BasedOn="{StaticResource SmallButton}">
+            <Setter Property="Background" Value="{StaticResource RedBrush}"/>
+        </Style>
+
+        <Style x:Key="SmallSuccessButton" TargetType="Button" BasedOn="{StaticResource SmallButton}">
+            <Setter Property="Background" Value="{StaticResource GreenBrush}"/>
+        </Style>
+
+        <Style x:Key="SmallWarningButton" TargetType="Button" BasedOn="{StaticResource SmallButton}">
+            <Setter Property="Background" Value="{StaticResource YellowBrush}"/>
+        </Style>
+
         <!-- TextBox Style -->
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
@@ -108,19 +126,28 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" Padding="30,18">
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" Padding="30,14">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="EasySave" FontSize="32" FontWeight="Bold" 
-                           FontStyle="Italic" Foreground="{StaticResource AccentBrush}" 
-                           VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="{DynamicResource LblLanguage}" FontSize="13" 
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="EasySave" FontSize="28" FontWeight="Bold" 
+                               FontStyle="Italic" Foreground="{StaticResource AccentBrush}"/>
+                    <TextBlock Text=" v3.0" FontSize="14" Foreground="{StaticResource SubTextBrush}" 
+                               VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                </StackPanel>
+                <!-- Business software warning -->
+                <TextBlock Grid.Column="1" Text="{DynamicResource LblBusinessSoftwareWarning}" 
+                           FontSize="12" FontWeight="Bold" Foreground="{StaticResource RedBrush}" 
+                           VerticalAlignment="Center" Margin="0,0,16,0"
+                           Visibility="{Binding BusinessSoftwareDetected, Converter={StaticResource BoolToVis}}"/>
+                <TextBlock Grid.Column="2" Text="{DynamicResource LblLanguage}" FontSize="13" 
                            Foreground="{StaticResource SubTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <ComboBox Grid.Column="2" x:Name="LanguageComboBox" MinWidth="110" VerticalAlignment="Center"
+                <ComboBox Grid.Column="3" x:Name="LanguageComboBox" MinWidth="110" VerticalAlignment="Center"
                           SelectionChanged="LanguageComboBox_SelectionChanged">
                     <ComboBoxItem Content="English" Tag="en"/>
                     <ComboBoxItem Content="Francais" Tag="fr"/>
@@ -174,7 +201,7 @@
                         <!-- Job List -->
                         <Border Grid.Row="0" BorderBrush="#A0A0A0" BorderThickness="1" CornerRadius="4" Background="White">
                             <DataGrid ItemsSource="{Binding Jobs}" 
-                                      SelectionUnit="FullRow"
+                                      SelectedItem="{Binding SelectedJob}"
                                       AutoGenerateColumns="False" IsReadOnly="True"
                                       Background="Transparent" BorderThickness="0"
                                       RowBackground="White" AlternatingRowBackground="#F0F0F0"
@@ -182,7 +209,7 @@
                                       GridLinesVisibility="Horizontal"
                                       HorizontalGridLinesBrush="#D0D0D0"
                                       HeadersVisibility="Column"
-                                      SelectionMode="Extended"
+                                      SelectionMode="Single"
                                       CanUserResizeRows="False"
                                       FontSize="13">
 
@@ -230,78 +257,119 @@
                                     </Style>
                                 </DataGrid.RowStyle>
 
-								<DataGrid.Columns>
-
-									<!-- ✅ Checkbox : job à exécuter en même temps -->
-									<DataGridTemplateColumn Header="✓" Width="40">
-										<DataGridTemplateColumn.CellTemplate>
-											<DataTemplate>
-												<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
-											</DataTemplate>
-										</DataGridTemplateColumn.CellTemplate>
-									</DataGridTemplateColumn>
-
-									<DataGridTextColumn Header="{DynamicResource LblName}" Binding="{Binding Name}" Width="*"/>
-									<DataGridTextColumn Header="{DynamicResource LblSource}" Binding="{Binding SourceDir}" Width="2*"/>
-									<DataGridTextColumn Header="{DynamicResource LblTarget}" Binding="{Binding TargetDir}" Width="2*"/>
-									<DataGridTextColumn Header="{DynamicResource LblType}" Binding="{Binding Type}" Width="100"/>
-
-									<!-- ✅ Progress Column -->
-									<DataGridTemplateColumn Header="Progress" Width="160">
-										<DataGridTemplateColumn.CellTemplate>
-											<DataTemplate>
-												<Grid VerticalAlignment="Center" Margin="4,0">
-													<ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100" Height="16" VerticalAlignment="Center"/>
-													<TextBlock Text="{Binding Progress, StringFormat={}{0:0}%}" 
-                                                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" 
-                                                               FontSize="11" Foreground="{StaticResource SubTextBrush}"/>
-												</Grid>
-											</DataTemplate>
-										</DataGridTemplateColumn.CellTemplate>
-									</DataGridTemplateColumn>
-
-									<!-- ✅ Actions par ligne : Play / Pause / Stop -->
-									<DataGridTemplateColumn Header="Actions" Width="260">
-										<DataGridTemplateColumn.CellTemplate>
-											<DataTemplate>
-												<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-													<Button Content="Play" Style="{StaticResource SuccessButton}"
-                            Command="{Binding DataContext.PlayJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}"
-                            Padding="12,6" Margin="0,0,8,0"/>
-
-													<Button Content="Pause" Style="{StaticResource WarningButton}"
-                            Command="{Binding DataContext.PauseJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}"
-                            Padding="12,6" Margin="0,0,8,0"/>
-
-													<Button Content="Stop" Style="{StaticResource DangerButton}"
-                            Command="{Binding DataContext.StopJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                            CommandParameter="{Binding}"
-                            Padding="12,6"/>
-												</StackPanel>
-											</DataTemplate>
-										</DataGridTemplateColumn.CellTemplate>
-									</DataGridTemplateColumn>
-
-								</DataGrid.Columns>
-							</DataGrid>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{DynamicResource LblName}" Binding="{Binding Name}" Width="*"/>
+                                    <DataGridTextColumn Header="{DynamicResource LblSource}" Binding="{Binding SourceDir}" Width="2*"/>
+                                    <DataGridTextColumn Header="{DynamicResource LblTarget}" Binding="{Binding TargetDir}" Width="2*"/>
+                                    <DataGridTextColumn Header="{DynamicResource LblType}" Binding="{Binding Type}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
                         </Border>
 
-                        <!-- Action Buttons - Left aligned like screenshot -->
+                        <!-- Action Buttons -->
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,16,0,0">
                             <Button Content="{DynamicResource BtnDelete}" Style="{StaticResource AccentButton}"
                                     Command="{Binding DeleteJobCommand}" Margin="0,0,8,0"/>
                             <Button Content="{DynamicResource BtnEdit}" Style="{StaticResource AccentButton}"
                                     Command="{Binding EditJobCommand}" Click="EditButton_Click" Margin="0,0,8,0"/>
-                            <Button Content="{DynamicResource BtnRun}" Style="{StaticResource AccentButton}"
+                            <Button Content="{DynamicResource BtnRun}" Style="{StaticResource SuccessButton}"
                                     Command="{Binding ExecuteJobCommand}" Margin="0,0,8,0"/>
-							<Button Content="Run Selected" Style="{StaticResource AccentButton}"
-                                    Command="{Binding ExecuteSelectedJobsCommand}" Margin="0,0,8,0"/>
-							<Button Content="Run All" Style="{StaticResource AccentButton}"
+                            <Button Content="{DynamicResource BtnRunAll}" Style="{StaticResource SuccessButton}"
                                     Command="{Binding ExecuteAllJobsCommand}" Margin="0,0,8,0"/>
-						</StackPanel>
+                            <Button Content="{DynamicResource BtnPauseAll}" Style="{StaticResource WarningButton}"
+                                    Command="{Binding PauseAllCommand}" Margin="0,0,8,0"/>
+                            <Button Content="{DynamicResource BtnResumeAll}" Style="{StaticResource AccentButton}"
+                                    Command="{Binding ResumeAllCommand}" Margin="0,0,8,0"/>
+                            <Button Content="{DynamicResource BtnStopAll}" Style="{StaticResource DangerButton}"
+                                    Command="{Binding StopBackupCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+            <!-- TAB 2: Running Jobs (v3.0 - Real-time monitoring) -->
+            <TabItem Header="{DynamicResource TabRunning}">
+                <Border Background="{StaticResource CardBrush}" CornerRadius="0,8,8,8" Padding="20">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="{DynamicResource LblRunningJobs}" FontSize="18" FontWeight="Bold"
+                                   Foreground="{StaticResource AccentBrush}" Margin="0,0,0,12"/>
+
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding RunningJobs}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,10"
+                                            BorderBrush="#C0C0C0" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Row 1: Job name + status + controls -->
+                                            <Grid Grid.Row="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"
+                                                               Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text=" - " Foreground="{StaticResource SubTextBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding StatusText}" FontSize="13" FontWeight="Normal"
+                                                               Foreground="{StaticResource SubTextBrush}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="12,0"
+                                                           FontSize="14" FontWeight="Bold" Foreground="{StaticResource AccentBrush}">
+                                                    <Run Text="{Binding Progress, StringFormat={}{0:0.0}%}"/>
+                                                </TextBlock>
+
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                    <Button Content="{DynamicResource BtnPause}" Style="{StaticResource SmallWarningButton}"
+                                                            Command="{Binding PauseCommand}" Margin="0,0,4,0"/>
+                                                    <Button Content="{DynamicResource BtnPlay}" Style="{StaticResource SmallSuccessButton}"
+                                                            Command="{Binding ResumeCommand}" Margin="0,0,4,0"/>
+                                                    <Button Content="{DynamicResource BtnStop}" Style="{StaticResource SmallDangerButton}"
+                                                            Command="{Binding StopCommand}"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Row 2: Progress bar -->
+                                            <ProgressBar Grid.Row="1" Value="{Binding Progress}" Minimum="0" Maximum="100"
+                                                         Height="12" Margin="0,8,0,6"
+                                                         Background="#D8D8D8" Foreground="{StaticResource GreenBrush}"
+                                                         BorderThickness="0"/>
+
+                                            <!-- Row 3: File info -->
+                                            <Grid Grid.Row="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding CurrentFile}" FontSize="11"
+                                                           Foreground="{StaticResource SubTextBrush}" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Grid.Column="1" FontSize="11" Foreground="{StaticResource SubTextBrush}" Margin="12,0,0,0">
+                                                    <Run Text="{Binding RemainingFiles, StringFormat={}{0} files remaining}"/>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Grid>
                 </Border>
             </TabItem>
@@ -544,6 +612,36 @@
                         <TextBox Text="{Binding SettingsBusinessSoftware, UpdateSourceTrigger=PropertyChanged}"
                                  Margin="0,0,0,4"/>
                         <TextBlock Text="{DynamicResource LblBusinessSoftwareHint}" FontSize="11"
+                                   Foreground="{StaticResource SubTextBrush}" Margin="0,0,0,14"/>
+
+                        <!-- v3.0: Priority Extensions -->
+                        <Label Content="{DynamicResource LblPriorityExt}"/>
+                        <TextBox Text="{Binding SettingsPriorityExtensions, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="0,0,0,4"/>
+                        <TextBlock Text="{DynamicResource LblPriorityExtHint}" FontSize="11"
+                                   Foreground="{StaticResource SubTextBrush}" Margin="0,0,0,14"/>
+
+                        <!-- v3.0: Max Large File Size -->
+                        <Label Content="{DynamicResource LblMaxFileSize}"/>
+                        <TextBox Text="{Binding SettingsMaxLargeFileSizeKB, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="0,0,0,4"/>
+                        <TextBlock Text="{DynamicResource LblMaxFileSizeHint}" FontSize="11"
+                                   Foreground="{StaticResource SubTextBrush}" Margin="0,0,0,14"/>
+
+                        <!-- v3.0: Log Destination -->
+                        <Label Content="{DynamicResource LblLogDestination}"/>
+                        <ComboBox Margin="0,0,0,14" x:Name="LogDestinationComboBox"
+                                  SelectionChanged="LogDestinationComboBox_SelectionChanged">
+                            <ComboBoxItem Content="Local" Tag="Local"/>
+                            <ComboBoxItem Content="Centralized (Docker)" Tag="Centralized"/>
+                            <ComboBoxItem Content="Both" Tag="Both"/>
+                        </ComboBox>
+
+                        <!-- v3.0: Log Server URL -->
+                        <Label Content="{DynamicResource LblLogServerUrl}"/>
+                        <TextBox Text="{Binding SettingsLogServerUrl, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="0,0,0,4"/>
+                        <TextBlock Text="{DynamicResource LblLogServerUrlHint}" FontSize="11"
                                    Foreground="{StaticResource SubTextBrush}" Margin="0,0,0,14"/>
 
                         <!-- Save Settings -->

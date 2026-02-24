@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using EasySave.Models;
@@ -8,7 +9,7 @@ namespace EasySave.Services
     public class RealTimeStateService
     {
         private readonly string _stateFilePath;
-        private readonly object _lock = new object();
+        private static readonly object _lock = new object();
 
         public RealTimeStateService()
         {
@@ -23,17 +24,30 @@ namespace EasySave.Services
             _stateFilePath = Path.Combine(appDataDir, "state.json");
         }
 
+        // v3.0: Write all job states at once (thread-safe, atomic)
         public void UpdateState(RealTimeState state)
         {
             lock (_lock)
             {
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
+                // Read existing states
+                List<RealTimeState> allStates = ReadAllStates();
 
-                string jsonString = JsonSerializer.Serialize(state, options);
-                File.WriteAllText(_stateFilePath, jsonString);
+                // Update or add this job's state
+                int idx = allStates.FindIndex(s => s.JobName == state.JobName);
+                if (idx >= 0)
+                    allStates[idx] = state;
+                else
+                    allStates.Add(state);
+
+                WriteAllStates(allStates);
+            }
+        }
+
+        public List<RealTimeState> GetAllStates()
+        {
+            lock (_lock)
+            {
+                return ReadAllStates();
             }
         }
 
@@ -53,15 +67,25 @@ namespace EasySave.Services
                 try
                 {
                     string json = File.ReadAllText(_stateFilePath);
-                    return JsonSerializer.Deserialize<RealTimeState>(json) ?? new RealTimeState();
+                    // Try to deserialize as list first (v3.0 format)
+                    var list = JsonSerializer.Deserialize<List<RealTimeState>>(json);
+                    if (list != null && list.Count > 0)
+                        return list[list.Count - 1];
+
+                    return new RealTimeState { Status = "Inactive", LastActionTimestamp = DateTime.Now };
                 }
                 catch
                 {
-                    return new RealTimeState
+                    try
                     {
-                        Status = "Inactive",
-                        LastActionTimestamp = DateTime.Now
-                    };
+                        // Fallback: single object (v2.0 compat)
+                        string json = File.ReadAllText(_stateFilePath);
+                        return JsonSerializer.Deserialize<RealTimeState>(json) ?? new RealTimeState();
+                    }
+                    catch
+                    {
+                        return new RealTimeState { Status = "Inactive", LastActionTimestamp = DateTime.Now };
+                    }
                 }
             }
         }
@@ -81,6 +105,37 @@ namespace EasySave.Services
                 CurrentSourceFile = "",
                 CurrentTargetFile = ""
             };
+        }
+
+        private List<RealTimeState> ReadAllStates()
+        {
+            if (!File.Exists(_stateFilePath))
+                return new List<RealTimeState>();
+
+            try
+            {
+                string json = File.ReadAllText(_stateFilePath);
+                if (string.IsNullOrWhiteSpace(json))
+                    return new List<RealTimeState>();
+
+                return JsonSerializer.Deserialize<List<RealTimeState>>(json) ?? new List<RealTimeState>();
+            }
+            catch
+            {
+                return new List<RealTimeState>();
+            }
+        }
+
+        private void WriteAllStates(List<RealTimeState> states)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(states, options);
+
+            // Atomic write
+            string tempPath = _stateFilePath + ".tmp";
+            File.WriteAllText(tempPath, jsonString);
+            File.Copy(tempPath, _stateFilePath, overwrite: true);
+            File.Delete(tempPath);
         }
     }
 }

@@ -55,16 +55,16 @@ namespace EasySave
                     string[] range = arg.Split('-');
                     int start = int.Parse(range[0]);
                     int end = int.Parse(range[1]);
-                    for (int i = start; i <= end; i++) vm.ExecuteJob(i);
+                    for (int i = start; i <= end; i++) vm.ExecuteJob(i - 1);
                 }
                 else if (arg.Contains(';'))
                 {
                     string[] list = arg.Split(';');
-                    foreach (var item in list) vm.ExecuteJob(int.Parse(item));
+                    foreach (var item in list) vm.ExecuteJob(int.Parse(item) - 1);
                 }
                 else
                 {
-                    vm.ExecuteJob(int.Parse(arg));
+                    vm.ExecuteJob(int.Parse(arg) - 1);
                 }
             }
             catch (Exception ex)

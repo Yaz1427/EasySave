@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace EasySave.Services
 {
@@ -12,110 +10,104 @@ namespace EasySave.Services
         XOR
     }
 
+    /// <summary>
+    /// Calls the external CryptoSoft.exe process for file encryption.
+    /// CryptoSoft is mono-instance (uses a named Mutex internally).
+    /// Returns encryption time in ms: >0 = success, &lt;0 = error code.
+    /// </summary>
     public class CryptoSoftService
     {
-        private const string DefaultKey = "EasySave2025ProSoftCESISecureKey!";
+        private string _cryptoSoftPath;
 
         public EncryptionMode Mode { get; set; } = EncryptionMode.AES;
 
+        public CryptoSoftService()
+        {
+            _cryptoSoftPath = FindCryptoSoftPath();
+        }
+
         /// <summary>
-        /// Encrypts a file in-place using the selected mode. Returns encryption time in ms.
-        /// 0 = file not found or error, >0 = time in ms.
+        /// Encrypts a file by calling external CryptoSoft.exe.
+        /// Returns: >0 = encryption time (ms), 0 = no encryption, &lt;0 = error code.
         /// </summary>
         public int EncryptFile(string filePath)
         {
-            return Mode switch
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+                return -2;
+
+            if (string.IsNullOrWhiteSpace(_cryptoSoftPath) || !File.Exists(_cryptoSoftPath))
             {
-                EncryptionMode.XOR => EncryptFileXor(filePath),
-                _ => EncryptFileAes(filePath)
+                _cryptoSoftPath = FindCryptoSoftPath();
+                if (!File.Exists(_cryptoSoftPath))
+                    return -1;
+            }
+
+            var sw = Stopwatch.StartNew();
+
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = _cryptoSoftPath,
+                    Arguments = $"\"{filePath}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                using var process = Process.Start(startInfo);
+                if (process == null)
+                {
+                    sw.Stop();
+                    return -3;
+                }
+
+                // Wait up to 60 seconds for CryptoSoft (it may be waiting for the Mutex)
+                bool exited = process.WaitForExit(60000);
+                sw.Stop();
+
+                if (!exited)
+                {
+                    try { process.Kill(); } catch { }
+                    return -4;
+                }
+
+                if (process.ExitCode != 0)
+                    return -process.ExitCode;
+
+                return Math.Max(1, (int)sw.ElapsedMilliseconds);
+            }
+            catch
+            {
+                sw.Stop();
+                return -3;
+            }
+        }
+
+        /// <summary>
+        /// Locates CryptoSoft.exe relative to the application directory.
+        /// </summary>
+        private static string FindCryptoSoftPath()
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            // When running from build output: go up to Code/ then into CryptoSoft/bin
+            string[] searchPaths = new[]
+            {
+                Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "CryptoSoft", "bin", "Debug", "net8.0", "CryptoSoft.exe")),
+                Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "CryptoSoft", "bin", "Release", "net8.0", "CryptoSoft.exe")),
+                Path.GetFullPath(Path.Combine(baseDir, "..", "CryptoSoft", "CryptoSoft.exe")),
+                Path.GetFullPath(Path.Combine(baseDir, "CryptoSoft.exe")),
             };
-        }
 
-        private int EncryptFileAes(string filePath)
-        {
-            if (!File.Exists(filePath))
-                return 0;
-
-            var sw = Stopwatch.StartNew();
-
-            try
+            foreach (var path in searchPaths)
             {
-                byte[] fileContent = File.ReadAllBytes(filePath);
-
-                byte[] keyBytes;
-                using (var sha256 = SHA256.Create())
-                {
-                    keyBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(DefaultKey));
-                }
-
-                byte[] encryptedData;
-                byte[] iv;
-
-                using (var aes = Aes.Create())
-                {
-                    aes.KeySize = 256;
-                    aes.BlockSize = 128;
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.PKCS7;
-                    aes.Key = keyBytes;
-                    aes.GenerateIV();
-                    iv = aes.IV;
-
-                    using (var encryptor = aes.CreateEncryptor())
-                    using (var ms = new MemoryStream())
-                    {
-                        using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-                        {
-                            cs.Write(fileContent, 0, fileContent.Length);
-                            cs.FlushFinalBlock();
-                        }
-                        encryptedData = ms.ToArray();
-                    }
-                }
-
-                using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                {
-                    fs.Write(iv, 0, iv.Length);
-                    fs.Write(encryptedData, 0, encryptedData.Length);
-                }
-
-                sw.Stop();
-                return Math.Max(1, (int)sw.ElapsedMilliseconds);
+                if (File.Exists(path))
+                    return path;
             }
-            catch
-            {
-                sw.Stop();
-                return 0;
-            }
-        }
 
-        private int EncryptFileXor(string filePath)
-        {
-            if (!File.Exists(filePath))
-                return 0;
-
-            var sw = Stopwatch.StartNew();
-
-            try
-            {
-                byte[] fileContent = File.ReadAllBytes(filePath);
-                byte[] keyBytes = Encoding.UTF8.GetBytes(DefaultKey);
-
-                for (int i = 0; i < fileContent.Length; i++)
-                {
-                    fileContent[i] ^= keyBytes[i % keyBytes.Length];
-                }
-
-                File.WriteAllBytes(filePath, fileContent);
-
-                sw.Stop();
-                return Math.Max(1, (int)sw.ElapsedMilliseconds);
-            }
-            catch
-            {
-                sw.Stop();
-                return 0;
-            }
+            return searchPaths[0];
         }
     }
 }
