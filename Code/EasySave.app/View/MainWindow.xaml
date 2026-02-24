@@ -174,7 +174,7 @@
                         <!-- Job List -->
                         <Border Grid.Row="0" BorderBrush="#A0A0A0" BorderThickness="1" CornerRadius="4" Background="White">
                             <DataGrid ItemsSource="{Binding Jobs}" 
-                                      SelectedItem="{Binding SelectedJob}"
+                                      SelectionUnit="FullRow"
                                       AutoGenerateColumns="False" IsReadOnly="True"
                                       Background="Transparent" BorderThickness="0"
                                       RowBackground="White" AlternatingRowBackground="#F0F0F0"
@@ -182,7 +182,7 @@
                                       GridLinesVisibility="Horizontal"
                                       HorizontalGridLinesBrush="#D0D0D0"
                                       HeadersVisibility="Column"
-                                      SelectionMode="Single"
+                                      SelectionMode="Extended"
                                       CanUserResizeRows="False"
                                       FontSize="13">
 
@@ -230,13 +230,63 @@
                                     </Style>
                                 </DataGrid.RowStyle>
 
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="{DynamicResource LblName}" Binding="{Binding Name}" Width="*"/>
-                                    <DataGridTextColumn Header="{DynamicResource LblSource}" Binding="{Binding SourceDir}" Width="2*"/>
-                                    <DataGridTextColumn Header="{DynamicResource LblTarget}" Binding="{Binding TargetDir}" Width="2*"/>
-                                    <DataGridTextColumn Header="{DynamicResource LblType}" Binding="{Binding Type}" Width="100"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
+								<DataGrid.Columns>
+
+									<!-- ✅ Checkbox : job à exécuter en même temps -->
+									<DataGridTemplateColumn Header="✓" Width="40">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+
+									<DataGridTextColumn Header="{DynamicResource LblName}" Binding="{Binding Name}" Width="*"/>
+									<DataGridTextColumn Header="{DynamicResource LblSource}" Binding="{Binding SourceDir}" Width="2*"/>
+									<DataGridTextColumn Header="{DynamicResource LblTarget}" Binding="{Binding TargetDir}" Width="2*"/>
+									<DataGridTextColumn Header="{DynamicResource LblType}" Binding="{Binding Type}" Width="100"/>
+
+									<!-- ✅ Progress Column -->
+									<DataGridTemplateColumn Header="Progress" Width="160">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<Grid VerticalAlignment="Center" Margin="4,0">
+													<ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100" Height="16" VerticalAlignment="Center"/>
+													<TextBlock Text="{Binding Progress, StringFormat={}{0:0}%}" 
+                                                               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" 
+                                                               FontSize="11" Foreground="{StaticResource SubTextBrush}"/>
+												</Grid>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+
+									<!-- ✅ Actions par ligne : Play / Pause / Stop -->
+									<DataGridTemplateColumn Header="Actions" Width="260">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+													<Button Content="Play" Style="{StaticResource SuccessButton}"
+                            Command="{Binding DataContext.PlayJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Padding="12,6" Margin="0,0,8,0"/>
+
+													<Button Content="Pause" Style="{StaticResource WarningButton}"
+                            Command="{Binding DataContext.PauseJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Padding="12,6" Margin="0,0,8,0"/>
+
+													<Button Content="Stop" Style="{StaticResource DangerButton}"
+                            Command="{Binding DataContext.StopJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Padding="12,6"/>
+												</StackPanel>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+
+								</DataGrid.Columns>
+							</DataGrid>
                         </Border>
 
                         <!-- Action Buttons - Left aligned like screenshot -->
@@ -247,14 +297,10 @@
                                     Command="{Binding EditJobCommand}" Click="EditButton_Click" Margin="0,0,8,0"/>
                             <Button Content="{DynamicResource BtnRun}" Style="{StaticResource AccentButton}"
                                     Command="{Binding ExecuteJobCommand}" Margin="0,0,8,0"/>
-							<Button Content="{DynamicResource BtnRunAll}" Style="{StaticResource AccentButton}"
+							<Button Content="Run Selected" Style="{StaticResource AccentButton}"
+                                    Command="{Binding ExecuteSelectedJobsCommand}" Margin="0,0,8,0"/>
+							<Button Content="Run All" Style="{StaticResource AccentButton}"
                                     Command="{Binding ExecuteAllJobsCommand}" Margin="0,0,8,0"/>
-							<Button Content="Play" Style="{StaticResource SuccessButton}"
-                                    Command="{Binding PlayBackupCommand}" Margin="0,0,8,0" Background="#FF49B35E"/>
-							<Button Content="Pause" Style="{StaticResource WarningButton}"
-                                    Command="{Binding PauseBackupCommand}" Margin="0,0,8,0" Background="#FFFFD83B"/>
-                            <Button Content="{DynamicResource BtnStop}" Style="{StaticResource DangerButton}"
-                                    Command="{Binding StopBackupCommand}" Width="71" Background="Red"/> 
 						</StackPanel>
                     </Grid>
                 </Border>

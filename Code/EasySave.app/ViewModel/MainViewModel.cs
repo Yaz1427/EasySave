@@ -37,8 +37,11 @@ namespace EasySave.ViewModel
         private BackupJob? _editingJob;
         private CancellationTokenSource? _cts;
 
-        // Log viewer
-        private ObservableCollection<LogEntry> _logEntries = new();
+        // Limite le nombre de jobs exécutés en parallèle
+		private readonly SemaphoreSlim _parallelJobsSemaphore = new SemaphoreSlim(4);
+
+		// Log viewer
+		private ObservableCollection<LogEntry> _logEntries = new();
         private ObservableCollection<string> _logFiles = new();
         private string? _selectedLogFile;
 
@@ -68,7 +71,7 @@ namespace EasySave.ViewModel
             // Commands
             CreateJobCommand = new RelayCommand(_ => CreateJob(), _ => CanCreateJob());
             DeleteJobCommand = new RelayCommand(_ => DeleteJob(), _ => SelectedJob != null && !IsRunning);
-            ExecuteJobCommand = new RelayCommand(_ => ExecuteSelectedJob(), _ => SelectedJob != null && !IsRunning);
+            ExecuteJobCommand = new RelayCommand(_ => ExecuteSelectedJobs(), _ => SelectedJob != null && !IsRunning);
             ExecuteAllJobsCommand = new RelayCommand(_ => ExecuteAllJobs(), _ => Jobs.Count > 0 && !IsRunning);
             SaveSettingsCommand = new RelayCommand(_ => SaveSettings());
             BrowseSourceCommand = new RelayCommand(_ => BrowseFolder(isSource: true));
@@ -85,10 +88,17 @@ namespace EasySave.ViewModel
             PlayBackupCommand = new RelayCommand(_ => PlaySelected(), _ => SelectedJob != null && IsRunning);
             PauseBackupCommand = new RelayCommand(_ => PauseSelected(), _ => SelectedJob != null && IsRunning);
 
-            LoadLogFiles();
-        }
+			ExecuteSelectedJobsCommand = new RelayCommand(_ => ExecuteSelectedJobs());
 
-        // --- Properties ---
+			LoadLogFiles();
+
+			// --- Ajout dans le constructeur (après l'initialisation des autres commandes) ---
+			PlayJobCommand = new RelayCommand(p => { if (p is BackupJob job) PlayJob(job); });
+			PauseJobCommand = new RelayCommand(p => { if (p is BackupJob job) PauseJob(job); });
+			StopJobCommand  = new RelayCommand(p => { if (p is BackupJob job) StopJob(job); });
+		}
+
+        // Properties
 
         public ObservableCollection<BackupJob> Jobs
         {
@@ -225,7 +235,12 @@ namespace EasySave.ViewModel
         public ICommand PauseBackupCommand { get; }
         public ICommand PlayBackupCommand { get; }
 
-        public bool IsEditing
+		public ICommand ExecuteSelectedJobsCommand { get; }
+		public ICommand PlayJobCommand { get; }
+		public ICommand PauseJobCommand { get; }
+		public ICommand StopJobCommand { get; }
+
+		public bool IsEditing
         {
             get => _isEditing;
             set
@@ -349,99 +364,140 @@ namespace EasySave.ViewModel
             StatusMessage = $"Job '{name}' deleted.";
         }
 
-        private async void ExecuteSelectedJob()
-        {
-            if (SelectedJob == null) return;
+		private async void ExecuteSelectedJobs()
+		{
+			var selectedJobs = Jobs.Where(j => j.IsSelected).ToList();
+			if (!selectedJobs.Any()) return;
 
-            IsRunning = true;
-            _cts = new CancellationTokenSource();
-            CurrentJobName = SelectedJob.Name;
-            CurrentProgress = 0;
-            StatusMessage = $"Running '{SelectedJob.Name}'...";
+			IsRunning = true;
+			_cts = new CancellationTokenSource();
+			var token = _cts.Token;
 
-            var jobToRun = SelectedJob;
-            var uiProgress = new Progress<double>(p => CurrentProgress = p);
-            var token = _cts.Token;
+			int success = 0;
+			int failed = 0;
 
-            try
-            {
-                await Task.Run(() => _backupService.ExecuteBackup(jobToRun, uiProgress, token), token);
-                CurrentProgress = 100;
-                StatusMessage = $"Job '{CurrentJobName}' completed successfully.";
-            }
-            catch (OperationCanceledException)
-            {
-                StatusMessage = $"Job '{CurrentJobName}' stopped by user.";
-            }
-            catch (BusinessSoftwareRunningException)
-            {
-                StatusMessage = $"Job '{CurrentJobName}' stopped: business software detected.";
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"Error on '{CurrentJobName}': {ex.Message}";
-            }
-            finally
-            {
-                _cts?.Dispose();
-                _cts = null;
-                IsRunning = false;
-            }
-        }
+			var tasks = selectedJobs.Select(job => Task.Run(async () =>
+			{
+				await _parallelJobsSemaphore.WaitAsync(token);
+				try
+				{
+					job.IsStopped = false;
+					job.IsPaused = false;
+					job.Status = "Running";
+					job.Progress = 0;
 
-        private async void ExecuteAllJobs()
-        {
-            if (Jobs.Count == 0) return;
+					var uiProgress = new Progress<double>(p =>
+					{
+						job.Progress = p;
+					});
 
-            IsRunning = true;
-            _cts = new CancellationTokenSource();
-            int success = 0;
-            int failed = 0;
-            var token = _cts.Token;
+					_backupService.ExecuteBackup(job, uiProgress, token);
 
-            for (int i = 0; i < Jobs.Count; i++)
-            {
-                if (token.IsCancellationRequested) { failed += (Jobs.Count - i); break; }
+					job.Progress = 100;
+					job.Status = "End";
+					Interlocked.Increment(ref success);
+				}
+				catch (OperationCanceledException)
+				{
+					job.Status = "Stopped";
+					Interlocked.Increment(ref failed);
+				}
+				catch (BusinessSoftwareRunningException)
+				{
+					job.Status = "Paused - Business software";
+					Interlocked.Increment(ref failed);
+				}
+				catch
+				{
+					job.Status = "Error";
+					Interlocked.Increment(ref failed);
+				}
+				finally
+				{
+					_parallelJobsSemaphore.Release();
+				}
+			}, token)).ToList();
 
-                var job = Jobs[i];
-                CurrentJobName = job.Name;
-                CurrentProgress = (double)i / Jobs.Count * 100;
-                StatusMessage = $"Running '{job.Name}' ({i + 1}/{Jobs.Count})...";
+			try
+			{
+				await Task.WhenAll(tasks);
+			}
+			finally
+			{
+				StatusMessage = $"Completed: {success} succeeded, {failed} failed.";
+				_cts?.Dispose();
+				_cts = null;
+				IsRunning = false;
+			}
+		}
 
-                var uiProgress = new Progress<double>(p => CurrentProgress = p);
+		private async void ExecuteAllJobs()
+		{
+			if (Jobs.Count == 0) return;
 
-                try
-                {
-                    await Task.Run(() => _backupService.ExecuteBackup(job, uiProgress, token), token);
-                    success++;
-                }
-                catch (OperationCanceledException)
-                {
-                    StatusMessage = $"Stopped by user at '{job.Name}'.";
-                    failed += (Jobs.Count - i);
-                    break;
-                }
-                catch (BusinessSoftwareRunningException)
-                {
-                    StatusMessage = $"Stopped at '{job.Name}': business software detected.";
-                    failed += (Jobs.Count - i);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    StatusMessage = $"Error on '{job.Name}': {ex.Message}";
-                    failed++;
-                }
-            }
+			IsRunning = true;
+			_cts = new CancellationTokenSource();
+			var token = _cts.Token;
 
-            CurrentProgress = 100;
-            StatusMessage = $"Completed: {success} succeeded, {failed} failed.";
-            _cts?.Dispose();
-            _cts = null;
-            IsRunning = false;
-        }
+			int success = 0;
+			int failed = 0;
 
-        private void StopBackup()
+			var tasks = Jobs.Select(job => Task.Run(async () =>
+			{
+				await _parallelJobsSemaphore.WaitAsync(token);
+				try
+				{
+					job.IsStopped = false;
+					job.IsPaused = false;
+					job.Status = "Running";
+					job.Progress = 0;
+
+					var uiProgress = new Progress<double>(p =>
+					{
+						job.Progress = p;
+					});
+
+					_backupService.ExecuteBackup(job, uiProgress, token);
+
+					job.Progress = 100;
+					job.Status = "End";
+					Interlocked.Increment(ref success);
+				}
+				catch (OperationCanceledException)
+				{
+					job.Status = "Stopped";
+					Interlocked.Increment(ref failed);
+				}
+				catch (BusinessSoftwareRunningException)
+				{
+					job.Status = "Paused - Business software";
+					Interlocked.Increment(ref failed);
+				}
+				catch
+				{
+					job.Status = "Error";
+					Interlocked.Increment(ref failed);
+				}
+				finally
+				{
+					_parallelJobsSemaphore.Release();
+				}
+			}, token)).ToList();
+
+			try
+			{
+				await Task.WhenAll(tasks);
+			}
+			finally
+			{
+				StatusMessage = $"Completed: {success} succeeded, {failed} failed.";
+				_cts?.Dispose();
+				_cts = null;
+				IsRunning = false;
+			}
+		}
+
+		private void StopBackup()
         {
             _cts?.Cancel();
             StatusMessage = "Stopping...";
@@ -614,6 +670,33 @@ namespace EasySave.ViewModel
             SelectedJob.IsStopped = true;
             SelectedJob.Status = "Stopped";
             StatusMessage = $"Job '{SelectedJob.Name}' stopped.";
+        }
+
+        private void PlayJob(BackupJob job)
+        {
+            if (job == null) return;
+            job.IsPaused = false;
+            job.IsStopped = false;
+            job.Status = "Running";
+            StatusMessage = $"Job '{job.Name}' resumed.";
+            // Optionnel : démarrer l'exécution si besoin
+            // _ = Task.Run(() => _backupService.ExecuteBackup(job));
+        }
+
+        private void PauseJob(BackupJob job)
+        {
+            if (job == null) return;
+            job.IsPaused = true;
+            job.Status = "Paused";
+            StatusMessage = $"Job '{job.Name}' paused.";
+        }
+
+        private void StopJob(BackupJob job)
+        {
+            if (job == null) return;
+            job.IsStopped = true;
+            job.Status = "Stopped";
+            StatusMessage = $"Job '{job.Name}' stopped.";
         }
     }
 }
