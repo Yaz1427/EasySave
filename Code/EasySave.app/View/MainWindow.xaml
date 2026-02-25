@@ -152,6 +152,7 @@
                     <ComboBoxItem Content="English" Tag="en"/>
                     <ComboBoxItem Content="Francais" Tag="fr"/>
                     <ComboBoxItem Content="Taqbaylit" Tag="kab"/>
+                    <ComboBoxItem Content="தமிழ்" Tag="ta"/>
                 </ComboBox>
             </Grid>
         </Border>
@@ -582,6 +583,7 @@
                             <ComboBoxItem Content="English" Tag="en"/>
                             <ComboBoxItem Content="Francais" Tag="fr"/>
                             <ComboBoxItem Content="Taqbaylit" Tag="kab"/>
+                            <ComboBoxItem Content="தமிழ்" Tag="ta"/>
                         </ComboBox>
 
                         <!-- Log Format -->

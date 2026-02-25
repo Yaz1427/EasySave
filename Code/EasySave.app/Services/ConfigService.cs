@@ -21,7 +21,7 @@ namespace EasySave.Services
         public ConfigService(string? configDirectory = null)
         {
             string configDir = string.IsNullOrWhiteSpace(configDirectory)
-                ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave")
+                ? Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."))
                 : configDirectory;
 
             if (!Directory.Exists(configDir))
