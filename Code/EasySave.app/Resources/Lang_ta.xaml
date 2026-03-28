@@ -1,0 +1,88 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Window -->
+    <sys:String x:Key="AppTitle">EasySave v3.0</sys:String>
+
+    <!-- Tabs -->
+    <sys:String x:Key="TabJobs">காப்புப் பணிகள்</sys:String>
+    <sys:String x:Key="TabCreate">பணி உருவாக்கு</sys:String>
+    <sys:String x:Key="TabEdit">பணி திருத்து</sys:String>
+    <sys:String x:Key="TabLogs">பதிவுகள்</sys:String>
+    <sys:String x:Key="TabSettings">அமைப்புகள்</sys:String>
+
+    <!-- Job list -->
+    <sys:String x:Key="LblName">பெயர்</sys:String>
+    <sys:String x:Key="LblSource">மூலம்</sys:String>
+    <sys:String x:Key="LblTarget">இலக்கு</sys:String>
+    <sys:String x:Key="LblType">வகை</sys:String>
+    <sys:String x:Key="LblFull">முழுமை</sys:String>
+    <sys:String x:Key="LblDifferential">வேறுபாடு</sys:String>
+
+    <!-- Buttons -->
+    <sys:String x:Key="BtnRun">இயக்கு</sys:String>
+    <sys:String x:Key="BtnRunAll">அனைத்தையும் இயக்கு</sys:String>
+    <sys:String x:Key="BtnDelete">நீக்கு</sys:String>
+    <sys:String x:Key="BtnCreate">உருவாக்கு</sys:String>
+    <sys:String x:Key="BtnSave">சேமி</sys:String>
+    <sys:String x:Key="BtnBrowse">உலாவு...</sys:String>
+    <sys:String x:Key="BtnEdit">திருத்து</sys:String>
+    <sys:String x:Key="BtnSaveEdit">மாற்றங்களைச் சேமி</sys:String>
+    <sys:String x:Key="BtnCancel">ரத்துசெய்</sys:String>
+    <sys:String x:Key="BtnStop">நிறுத்து</sys:String>
+
+    <!-- Create form -->
+    <sys:String x:Key="LblJobName">பணி பெயர்:</sys:String>
+    <sys:String x:Key="LblSourceDir">மூல கோப்புறை:</sys:String>
+    <sys:String x:Key="LblTargetDir">இலக்கு கோப்புறை:</sys:String>
+    <sys:String x:Key="LblBackupType">காப்பு வகை:</sys:String>
+
+    <!-- Settings -->
+    <sys:String x:Key="LblLanguage">மொழி:</sys:String>
+    <sys:String x:Key="LblLogFormat">பதிவு வடிவம்:</sys:String>
+    <sys:String x:Key="LblEncryptionMode">மறையாக்க முறை:</sys:String>
+    <sys:String x:Key="LblEncryptExt">மறையாக்க நீட்டிப்புகள்:</sys:String>
+    <sys:String x:Key="LblEncryptExtHint">எ.கா. .txt; .docx; .pdf</sys:String>
+    <sys:String x:Key="LblBusinessSoftware">வணிக மென்பொருள் செயல்முறை:</sys:String>
+    <sys:String x:Key="LblBusinessSoftwareHint">எ.கா. CalculatorApp</sys:String>
+    <sys:String x:Key="LblCryptoSoftPath">CryptoSoft பாதை:</sys:String>
+    <sys:String x:Key="LblSaveSettings">அமைப்புகளைச் சேமி</sys:String>
+
+    <!-- Status -->
+    <sys:String x:Key="LblProgress">முன்னேற்றம்:</sys:String>
+    <sys:String x:Key="LblStatus">நிலை:</sys:String>
+    <sys:String x:Key="LblCurrentJob">தற்போதைய பணி:</sys:String>
+    <sys:String x:Key="LblNoJobs">காப்புப் பணிகள் எதுவும் அமைக்கப்படவில்லை.</sys:String>
+
+    <!-- Logs -->
+    <sys:String x:Key="LblLogFile">பதிவுக் கோப்பு:</sys:String>
+    <sys:String x:Key="BtnRefresh">புதுப்பி</sys:String>
+    <sys:String x:Key="BtnOpenFolder">கோப்புறையைத் திற</sys:String>
+    <sys:String x:Key="LblTimestamp">நேர முத்திரை</sys:String>
+    <sys:String x:Key="LblLogJobName">பணி பெயர்</sys:String>
+    <sys:String x:Key="LblSourcePath">மூலம்</sys:String>
+    <sys:String x:Key="LblTargetPath">இலக்கு</sys:String>
+    <sys:String x:Key="LblFileSize">அளவு (பைட்)</sys:String>
+    <sys:String x:Key="LblTransferTime">பரிமாற்றம் (மி.வி)</sys:String>
+    <sys:String x:Key="LblEncryptTime">மறையாக்கம் (மி.வி)</sys:String>
+    <sys:String x:Key="LblNoLogs">பதிவுக் கோப்புகள் எதுவும் இல்லை.</sys:String>
+
+    <!-- v3.0 -->
+    <sys:String x:Key="TabRunning">இயங்கும் பணிகள்</sys:String>
+    <sys:String x:Key="LblRunningJobs">இயங்கும் பணிகள் - நேரடி கண்காணிப்பு</sys:String>
+    <sys:String x:Key="BtnPause">இடைநிறுத்து</sys:String>
+    <sys:String x:Key="BtnPlay">தொடர்</sys:String>
+    <sys:String x:Key="BtnPauseAll">அனைத்தையும் இடைநிறுத்து</sys:String>
+    <sys:String x:Key="BtnResumeAll">அனைத்தையும் தொடர்</sys:String>
+    <sys:String x:Key="BtnStopAll">அனைத்தையும் நிறுத்து</sys:String>
+    <sys:String x:Key="LblPriorityExt">முன்னுரிமைக் கோப்பு நீட்டிப்புகள்:</sys:String>
+    <sys:String x:Key="LblPriorityExtHint">எ.கா. .docx; .xlsx; .pdf (முதலில் செயலாக்கப்படும்)</sys:String>
+    <sys:String x:Key="LblMaxFileSize">பெரிய கோப்பு அளவு (KB):</sys:String>
+    <sys:String x:Key="LblMaxFileSizeHint">இந்த அளவுக்கு மேல் உள்ள கோப்புகள் இணையாக மாற்ற இயலாது</sys:String>
+    <sys:String x:Key="LblLogDestination">பதிவு இடம்:</sys:String>
+    <sys:String x:Key="LblLogServerUrl">பதிவு சேவையக URL:</sys:String>
+    <sys:String x:Key="LblLogServerUrlHint">எ.கா. http://localhost:5080</sys:String>
+    <sys:String x:Key="LblBusinessSoftwareWarning">வணிக மென்பொருள் கண்டறியப்பட்டது - பணிகள் இடைநிறுத்தப்பட்டன</sys:String>
+
+</ResourceDictionary>

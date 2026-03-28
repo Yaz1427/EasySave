@@ -66,7 +66,7 @@ namespace EasySave.View
                 App.SetLanguage(lang);
 
                 // Sync both language combos
-                int idx = lang switch { "fr" => 1, "kab" => 2, _ => 0 };
+                int idx = lang switch { "fr" => 1, "kab" => 2, "ta" => 3, _ => 0 };
                 if (LanguageComboBox.SelectedIndex != idx)
                     LanguageComboBox.SelectedIndex = idx;
                 if (SettingsLanguageComboBox.SelectedIndex != idx)

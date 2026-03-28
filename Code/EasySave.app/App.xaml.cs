@@ -32,6 +32,7 @@ namespace EasySave
             {
                 "fr" => "Resources/Lang_fr.xaml",
                 "kab" => "Resources/Lang_kab.xaml",
+                "ta" => "Resources/Lang_ta.xaml",
                 _ => "Resources/Lang_en.xaml"
             };
 
